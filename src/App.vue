@@ -12,7 +12,6 @@
           helloWorld
       },
       mounted () {
-        console.log('...');
       }
   }
 </script>
