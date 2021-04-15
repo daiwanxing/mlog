@@ -10,6 +10,9 @@
       name: "App",
       components: {
           helloWorld
+      },
+      mounted () {
+        console.log('...');
       }
   }
 </script>
