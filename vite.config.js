@@ -11,8 +11,11 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: "http://localhost:3001",
-        changeOrigin: true
+        target: "http://netease-cloud-music-api-one-hazel.vercel.app:443",
+        changeOrigin: true,
+        rewrite: (path) => {
+          return path.replace("/api", '');
+        }
       }
     }
   },
