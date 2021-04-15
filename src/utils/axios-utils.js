@@ -2,7 +2,7 @@ import axios from "axios";
 import { get, isObject } from 'lodash-es';
 
 const instance = axios.create({
-    baseURL: "http://netease-cloud-music-api-one-hazel.vercel.app",
+    baseURL: "https://netease-cloud-music-api-one-hazel.vercel.app/",
     timeout: 5000
 });
 
