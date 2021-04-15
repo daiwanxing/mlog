@@ -1,6 +1,7 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
   <hello-world msg="Hello Vue 3 + Vite" />
+  <h1>Success start you web app!</h1>
 </template>
 
 <script>
@@ -12,7 +13,7 @@
           helloWorld
       },
       mounted () {
-          console.log('...');
+          console.log('Success start web app! ');
       }
   }
 </script>

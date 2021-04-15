@@ -2,20 +2,20 @@ language: node_js
 os: linux
 node_js: "14"
 install:
-  - npm i
+  - npm install
 script:
   - npm run build
 after_script:
-  - git clone https://github.com/daiwanxing/mlog.git .temp
+  - git clone ${GH_REP} .temp
   - cd .temp
   - git checkout gh-pages
   - cd ../
   - mv .temp/.git dist
   - cd dist
-  - git config user.name "daiwanxing"
-  - git config user.email "377099119@qq.com"
+  - git config user.name "${USER_NAME}"
+  - git config user.email "${USER_MAIL}"
   - git add .
-  - git commit -m ":construction_worker:- Build & Deploy by Travis CI"
+  - git commit -m ":construction_worker:- Build & Deploy by Travis CI ROBOT"
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
 # E: Build LifeCycle
 
