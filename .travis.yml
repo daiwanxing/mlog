@@ -9,7 +9,7 @@ delpoy:
   provider:  pages,
   skip_cleanup: true
   local_dir: dist
-  github_token: $GITHUB_TOKEN
+  github_token: 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
   keep_history: true
   on:
     branch: master
