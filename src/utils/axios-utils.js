@@ -5,7 +5,6 @@ const instance = axios.create({
     timeout: 5000
 });
 
-
 instance.interceptors.response.use(function (res) {
     return res.data
 }, function (error) {
