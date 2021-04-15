@@ -6,7 +6,7 @@ install:
 script:
   - npm run build
 after_script:
-  - git clone git@github.com:daiwanxing/mlog.git .temp
+  - git clone https://github.com/daiwanxing/mlog.git .temp
   - cd .temp
   - git checkout gh-pages
   - cd ../
