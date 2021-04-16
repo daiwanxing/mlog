@@ -11,6 +11,7 @@
 <style>
 :root {
   --mainTheme: #d43c33;
+  --textTheme: #dd001b;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
