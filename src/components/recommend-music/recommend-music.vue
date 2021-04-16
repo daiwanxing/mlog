@@ -49,7 +49,7 @@ export default {
     let swiperIndex = ref(0); // 记住当前的轮播索引
 
     fetchBanner().then((result) => {
-      data.bannerList = result.banners || [];
+       data.bannerList = result.banners || [];
     });
 
     function swiperHandler (data) {

@@ -115,21 +115,19 @@
     </header>
     <nav class="music-nav">
       <ul class="music-nav-list">
-        <li 
-            :class="['music-nav-item', { active: defaultActive === index }]"
-            v-for="(item, index) in staticNavList"
-            :key="index"
+        <li
+          :class="['music-nav-item', { active: defaultActive === index }]"
+          v-for="(item, index) in staticNavList"
+          :key="index"
         >
-            <a 
-                class="music-nav-link" 
-                @click="defaultActive = index"
-                :ref="setItemRef"
-            >{{ item.name }}</a>
+          <a
+            class="music-nav-link"
+            @click="defaultActive = index"
+            :ref="setItemRef"
+            >{{ item.name }}</a
+          >
         </li>
-        <i 
-            class="ember-view" 
-            ref="emberRef"
-        ></i>
+        <i class="ember-view" ref="emberRef"></i>
       </ul>
     </nav>
     <keep-alive>
@@ -139,75 +137,80 @@
 </template>
 
 <script>
-import recommendMusic from '../recommend-music/recommend-music.vue';
-import hotSong from '../hot-song/hot-song.vue';
-import searchPage from '../search-page/search-page.vue';
-import { debounce } from 'lodash-es';
-import { ref, onMounted, watch, onBeforeUnmount, reactive, toRefs } from 'vue';
+import recommendMusic from "../recommend-music/recommend-music.vue";
+import hotSong from "../hot-song/hot-song.vue";
+import searchPage from "../search-page/search-page.vue";
+import { debounce } from "lodash-es";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 
 export default {
   name: "index",
   components: {
     recommendMusic,
     hotSong,
-    searchPage
+    searchPage,
   },
   setup() {
-    const compoenntId = ref('recommend-music');
+    const compoenntId = ref("hot-song"); // TODO 部署的时候改为recommend-music
     const staticNavList = [
       {
-      name: '推荐音乐',
-      val: 'recommend-music'
+        name: "推荐音乐",
+        val: "recommend-music",
       },
       {
-        name: '热歌榜',
-        val: 'hot-song'
+        name: "热歌榜",
+        val: "hot-song",
       },
       {
-        name: '搜索',
-        val: 'search-page'
-      }
+        name: "搜索",
+        val: "search-page",
+      },
     ];
-    const defaultActive = ref(0);
+    const defaultActive = computed({
+      set (idx) {
+          compoenntId.value = staticNavList[idx].val;
+          moveEmberBar(idx); // 移动小横条
+      },
+      get() {
+        return staticNavList.findIndex((d) => d.val === compoenntId.value);
+      },
+    });
 
+    // 下载网易云音乐客户端
     const downloadClient = function () {
-        window.open("https://music.163.com/api/android/download/latest2");
+      window.open("https://music.163.com/api/android/download/latest2");
     };
-    
+
     const itemRefs = []; // 顶部 tab的refs
-    function setItemRef (el) {
-        itemRefs.push(el);
+    function setItemRef(el) {
+      itemRefs.push(el);
     }
 
     const emberRef = ref(); // 顶部 Tab小横条
     onMounted(function () {
-        moveEmberBar(0);
-        setTimeout(() => {
-            emberRef.value.classList.add('transition');
-        }, 10);
+      moveEmberBar(defaultActive.value);
+      setTimeout(() => {
+        emberRef.value.classList.add("transition");
+      }, 10);
     });
-    function moveEmberBar (idx) {
-        // 索引改变，tabbar跟着移动
-        const refDom = itemRefs[idx];
-        const offsetLeft =refDom.offsetLeft;
-        const domWidth = refDom.clientWidth;
-        const emberRefNode = emberRef.value;
-        emberRefNode.style.width = domWidth + 'px';
-        emberRefNode.style.transform = `translate3d(${offsetLeft}px, 0, 0)`;
+    function moveEmberBar(idx) {
+      // 索引改变，tabbar跟着移动
+      const refDom = itemRefs[idx];
+      const offsetLeft = refDom.offsetLeft;
+      const domWidth = refDom.clientWidth;
+      const emberRefNode = emberRef.value;
+      emberRefNode.style.width = domWidth + "px";
+      emberRefNode.style.transform = `translate3d(${offsetLeft}px, 0, 0)`;
     }
 
     const resize = debounce(function () {
-        moveEmberBar(defaultActive.value);
+      moveEmberBar(defaultActive.value);
     }, 500);
-    
+
     window.addEventListener("resize", resize);
-    
+
     onBeforeUnmount(function () {
       window.removeEventListener("resize", resize);
-    });
-    watch(defaultActive, function (index) {
-        moveEmberBar(index); // 移动小横条
-        compoenntId.value = staticNavList[index].val; // switch 对应的component
     });
 
     return {
@@ -216,7 +219,7 @@ export default {
       staticNavList,
       defaultActive,
       setItemRef,
-      emberRef
+      emberRef,
     };
   },
 };
@@ -253,8 +256,8 @@ main {
     }
   }
 
-  nav { 
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+  nav {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     .music-nav-list {
       display: flex;
       margin: 0;
@@ -263,34 +266,34 @@ main {
     }
 
     .music-nav-item {
-        flex: 1;
-        line-height: 40px;
-        padding: 0 10px;
-        &.active {
-            color: var(--textTheme);  
-        }
+      flex: 1;
+      line-height: 40px;
+      padding: 0 10px;
+      &.active {
+        color: var(--textTheme);
+      }
     }
 
     .ember-view {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        height: 3px;
-        width: 56px;
-        border-radius: 10px;
-        background-color: var(--textTheme);
-        transform: translate3d(0, 0, 0);
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 56px;
+      border-radius: 10px;
+      background-color: var(--textTheme);
+      transform: translate3d(0, 0, 0);
 
-        &.transition {
-        transition: .3s all cubic-bezier(0.455, 0.03, 0.515, 0.955);
-    }
+      &.transition {
+        transition: 0.3s all cubic-bezier(0.455, 0.03, 0.515, 0.955);
+      }
     }
 
     .music-nav-link {
-        display: inline-block;
-        height: 100%;
-        color: inherit;
-        font-size: 14px;
+      display: inline-block;
+      height: 100%;
+      color: inherit;
+      font-size: 14px;
     }
   }
 }
