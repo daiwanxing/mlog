@@ -143,18 +143,18 @@
 </template>
 
 <script>
-import { ref, onMounted, watch,nextTick } from 'vue';
+import { debounce } from 'lodash-es';
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
+
 export default {
   name: "index",
   setup() {
-
     const staticNavList = ["推荐音乐", "热歌榜", "搜索"];
     let defaultActive = ref(0);
 
     const downloadClient = function () {
-      window.open("https://music.163.com/api/android/download/latest2");
+        window.open("https://music.163.com/api/android/download/latest2");
     };
-
     const itemRefs = [];
     const emberRef = ref();
     // 绑定多个nav-link dom
@@ -168,6 +168,15 @@ export default {
             emberRef.value.classList.add('transition');
         }, 10);
     });
+    onBeforeUnmount(function () {
+        window.removeEventListener("resize", resize);
+    });
+    
+    const resize = debounce(function () {
+        moveEmberBar(defaultActive.value);
+    }, 500);
+
+    window.addEventListener("resize", resize);
 
     function moveEmberBar (idx) {
         // 索引改变，tabbar跟着移动
