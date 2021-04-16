@@ -1,5 +1,5 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
+  <img alt="Vue logo" src="./assets/navigation.png" width="200"/>
   <hello-world msg="Hello Vue 3 + Vite" />
   <h1>Success start you web app!</h1>
   <ul>
