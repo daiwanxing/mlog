@@ -2,21 +2,27 @@
   <section class="recommend-music">
     <div class="swiper-box">
       <!-- 轮播容器 -->
-         <div class="swiper-group">
-          <swiper
-              style="height: 150px"
-              autoplay
-              loop
-              :pagination="{ clickable: true, bulletActiveClass: 'net-bullet-active', bulletClass: 'net-bullet' }"
-          >
-            <swiper-slide
-                v-for="(item, index) in bannerList"
-                :key="index"
-            >
-              <img :src="item.imageUrl" :alt="item.typeTitle" class="swiper-image">
-            </swiper-slide>
-          </swiper>
-      </div>
+      <swiper
+        v-if="bannerList.length && swiperVisible"
+        loop
+        :space-between="10"
+        :initialSlide="swiperIndex"
+        autoplay
+        :pagination="{
+          clickable: true,
+          bulletActiveClass: 'net-bullet-active',
+          bulletClass: 'net-bullet',
+        }"
+        @slideChange="swiperHandler"
+      >
+        <swiper-slide v-for="(item, index) in bannerList" :key="index">
+            <img
+              :src="item.imageUrl"
+              :alt="item.typeTitle"
+              class="swiper-image"
+            />
+        </swiper-slide>
+      </swiper>
     </div>
     <!-- 推荐歌单 -->
     <section class="song-push"></section>
@@ -26,9 +32,9 @@
 </template>
 
 <script>
-import { fetchBanner } from '@/api/index';
+import { fetchBanner } from "@/api/index";
 import { installSwiperModule } from "@/useSetup/useSwiper.js";
-import { reactive, toRefs } from 'vue';
+import { reactive, toRefs, ref, onActivated, onDeactivated } from "vue";
 
 export default {
   name: "recommend-music",
@@ -37,23 +43,45 @@ export default {
   },
   setup() {
     const data = reactive({
-        bannerList: null
+      bannerList: [],
     });
-    fetchBanner().then(result => {
-        data.bannerList = result.banners || [];
+    let swiperVisible = ref(true); // 轮播容器是否显示
+    let swiperIndex = ref(0); // 记住当前的轮播索引
+
+    fetchBanner().then((result) => {
+      data.bannerList = result.banners || [];
     });
 
-      return {
-          ...toRefs(data)
-      }
+    function swiperHandler (data) {
+        swiperIndex.value = data.realIndex;
+    }
+
+    onDeactivated(function () {
+        swiperVisible.value = false;
+    });
+    onActivated(function () {
+        swiperVisible.value = true;
+    });
+
+    return {
+        swiperVisible,
+        swiperHandler,
+        swiperIndex,
+        ...toRefs(data),
+    };
   },
 };
 </script>
 
 <style lang="scss">
-.swiper-group {
+.swiper-box {
+  padding: 10px;
+  box-sizing: border-box;
+
   .swiper-image {
     width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
   }
 
   .net-bullet-active.net-bullet {
@@ -71,5 +99,6 @@ export default {
 }
 </style>
 <style scoped lang="scss">
-.recommend-music {}
+.recommend-music {
+}
 </style>
