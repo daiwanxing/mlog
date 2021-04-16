@@ -124,7 +124,7 @@
                 class="music-nav-link" 
                 @click="defaultActive = index"
                 :ref="setItemRef"
-            >{{ item }}</a>
+            >{{ item.name }}</a>
         </li>
         <i 
             class="ember-view" 
@@ -132,12 +132,14 @@
         ></i>
       </ul>
     </nav>
-    <section>
+    <component :is="compoenntId"></component>
+    <!-- <section>
       <div class="swiper-group">
           <swiper
               style="height: 150px"
+              autoplay
               loop
-              :pagination="{ clickable: true }"
+              :pagination="{ clickable: true, bulletActiveClass: 'net-bullet-active', bulletClass: 'net-bullet' }"
           >
             <swiper-slide
                 v-for="(item, index) in bannerList"
@@ -145,20 +147,20 @@
             >
               <img :src="item.imageUrl" :alt="item.typeTitle" class="swiper-image">
             </swiper-slide>
-            <template v-slot:pagination>
-              <div class="swiper-pagination"></div>
-            </template>
           </swiper>
       </div>
-    </section>
+    </section> -->
     <!-- 推荐歌单 -->
-    <section class="song-push"></section>
+    <!-- <section class="song-push"></section> -->
     <!-- 最新音乐 -->
-    <section class="new-song-album"></section>
+    <!-- <section class="new-song-album"></section> -->
   </main>
 </template>
 
 <script>
+import recommendMusic from '../recommend-music/recommend-music.vue';
+import hotSong from '../hot-song/hot-song.vue';
+import searchPage from '../search-page/search-page.vue';
 import { debounce } from 'lodash-es';
 import { ref, onMounted, watch, onBeforeUnmount, reactive, toRefs } from 'vue';
 import { installSwiperModule } from '@/useSetup/useSwiper.js';
@@ -166,16 +168,36 @@ import { fetchBanner } from '@/api/index';
 
 export default {
   name: "index",
-  components: installSwiperModule(),
+  components: {
+    ...installSwiperModule(),
+    recommendMusic,
+    hotSong,
+    searchPage
+  },
   setup() {
-    const staticNavList = ["推荐音乐", "热歌榜", "搜索"];
+
+    const compoenntId = ref('recommend-music');
+    const staticNavList = [
+      {
+      name: '推荐音乐',
+      val: 'recommend-music'
+      },
+      {
+        name: '热歌榜',
+        val: 'hot-song'
+      },
+      {
+        name: '搜索',
+        val: 'search-page'
+      }
+    ];
     const defaultActive = ref(0);
 
     const downloadClient = function () {
         window.open("https://music.163.com/api/android/download/latest2");
     };
 
-    
+
     const data = reactive({
         bannerList: []
     });
@@ -185,7 +207,7 @@ export default {
         itemRefs.push(el);
     }
 
-    const emberRef = ref(); // 顶部tab 激活态导航条
+    const emberRef = ref(); // 顶部 Tab小横条
     onMounted(function () {
         moveEmberBar(0);
         setTimeout(() => {
@@ -211,13 +233,17 @@ export default {
     onBeforeUnmount(function () {
       window.removeEventListener("resize", resize);
     });
-    watch(defaultActive, moveEmberBar);
+    watch(defaultActive, function (index) {
+        moveEmberBar(index); // 移动小横条
+        compoenntId.value = staticNavList[index].val; // switch 对应的component
+    });
 
     fetchBanner().then(result => {
         data.bannerList = result.banners
     });
 
     return {
+      compoenntId,
       downloadClient,
       staticNavList,
       defaultActive,
@@ -228,6 +254,28 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+  .swiper-group {
+  
+    .swiper-image {
+      width: 100%;
+    }
+
+    .net-bullet-active.net-bullet {
+      background-color: var(--mainTheme);
+    }
+
+    .net-bullet {
+      display: inline-block;
+      background-color: rgba(0,0, 0, .3);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin: 0 4px;
+    }
+  }
+</style>
 
 <style scoped lang="scss">
 main {
@@ -298,13 +346,6 @@ main {
         height: 100%;
         color: inherit;
         font-size: 14px;
-    }
-  }
-
-  .swiper-group {
-  
-    .swiper-image {
-      width: 100%;
     }
   }
 }
