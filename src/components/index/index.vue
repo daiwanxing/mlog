@@ -132,28 +132,9 @@
         ></i>
       </ul>
     </nav>
-    <component :is="compoenntId"></component>
-    <!-- <section>
-      <div class="swiper-group">
-          <swiper
-              style="height: 150px"
-              autoplay
-              loop
-              :pagination="{ clickable: true, bulletActiveClass: 'net-bullet-active', bulletClass: 'net-bullet' }"
-          >
-            <swiper-slide
-                v-for="(item, index) in bannerList"
-                :key="index"
-            >
-              <img :src="item.imageUrl" :alt="item.typeTitle" class="swiper-image">
-            </swiper-slide>
-          </swiper>
-      </div>
-    </section> -->
-    <!-- 推荐歌单 -->
-    <!-- <section class="song-push"></section> -->
-    <!-- 最新音乐 -->
-    <!-- <section class="new-song-album"></section> -->
+    <keep-alive>
+      <component :is="compoenntId" :data="propsData"></component>
+    </keep-alive>
   </main>
 </template>
 
@@ -163,19 +144,17 @@ import hotSong from '../hot-song/hot-song.vue';
 import searchPage from '../search-page/search-page.vue';
 import { debounce } from 'lodash-es';
 import { ref, onMounted, watch, onBeforeUnmount, reactive, toRefs } from 'vue';
-import { installSwiperModule } from '@/useSetup/useSwiper.js';
 import { fetchBanner } from '@/api/index';
 
 export default {
   name: "index",
   components: {
-    ...installSwiperModule(),
     recommendMusic,
     hotSong,
     searchPage
   },
   setup() {
-
+    const propsData = reactive({});
     const compoenntId = ref('recommend-music');
     const staticNavList = [
       {
@@ -196,11 +175,6 @@ export default {
     const downloadClient = function () {
         window.open("https://music.163.com/api/android/download/latest2");
     };
-
-
-    const data = reactive({
-        bannerList: []
-    });
     
     const itemRefs = []; // 顶部 tab的refs
     function setItemRef (el) {
@@ -239,7 +213,7 @@ export default {
     });
 
     fetchBanner().then(result => {
-        data.bannerList = result.banners
+        propsData.bannerList = result.banners;
     });
 
     return {
@@ -249,33 +223,11 @@ export default {
       defaultActive,
       setItemRef,
       emberRef,
-      ...toRefs(data)
+      propsData
     };
   },
 };
 </script>
-
-<style lang="scss">
-  .swiper-group {
-  
-    .swiper-image {
-      width: 100%;
-    }
-
-    .net-bullet-active.net-bullet {
-      background-color: var(--mainTheme);
-    }
-
-    .net-bullet {
-      display: inline-block;
-      background-color: rgba(0,0, 0, .3);
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin: 0 4px;
-    }
-  }
-</style>
 
 <style scoped lang="scss">
 main {
