@@ -133,7 +133,23 @@
       </ul>
     </nav>
     <section>
-      <div class="swiper-group"></div>
+      <div class="swiper-group">
+          <swiper
+              style="height: 150px"
+              loop
+              :pagination="{ clickable: true }"
+          >
+            <swiper-slide
+                v-for="(item, index) in bannerList"
+                :key="index"
+            >
+              <img :src="item.imageUrl" :alt="item.typeTitle" class="swiper-image">
+            </swiper-slide>
+            <template v-slot:pagination>
+              <div class="swiper-pagination"></div>
+            </template>
+          </swiper>
+      </div>
     </section>
     <!-- 推荐歌单 -->
     <section class="song-push"></section>
@@ -144,40 +160,38 @@
 
 <script>
 import { debounce } from 'lodash-es';
-import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
+import { ref, onMounted, watch, onBeforeUnmount, reactive, toRefs } from 'vue';
+import { installSwiperModule } from '@/useSetup/useSwiper.js';
+import { fetchBanner } from '@/api/index';
 
 export default {
   name: "index",
+  components: installSwiperModule(),
   setup() {
     const staticNavList = ["推荐音乐", "热歌榜", "搜索"];
-    let defaultActive = ref(0);
+    const defaultActive = ref(0);
 
     const downloadClient = function () {
         window.open("https://music.163.com/api/android/download/latest2");
     };
-    const itemRefs = [];
-    const emberRef = ref();
-    // 绑定多个nav-link dom
+
+    
+    const data = reactive({
+        bannerList: []
+    });
+    
+    const itemRefs = []; // 顶部 tab的refs
     function setItemRef (el) {
         itemRefs.push(el);
     }
 
+    const emberRef = ref(); // 顶部tab 激活态导航条
     onMounted(function () {
         moveEmberBar(0);
         setTimeout(() => {
             emberRef.value.classList.add('transition');
         }, 10);
     });
-    onBeforeUnmount(function () {
-        window.removeEventListener("resize", resize);
-    });
-    
-    const resize = debounce(function () {
-        moveEmberBar(defaultActive.value);
-    }, 500);
-
-    window.addEventListener("resize", resize);
-
     function moveEmberBar (idx) {
         // 索引改变，tabbar跟着移动
         const refDom = itemRefs[idx];
@@ -188,14 +202,28 @@ export default {
         emberRefNode.style.transform = `translate3d(${offsetLeft}px, 0, 0)`;
     }
 
+    const resize = debounce(function () {
+        moveEmberBar(defaultActive.value);
+    }, 500);
+    
+    window.addEventListener("resize", resize);
+    
+    onBeforeUnmount(function () {
+      window.removeEventListener("resize", resize);
+    });
     watch(defaultActive, moveEmberBar);
+
+    fetchBanner().then(result => {
+        data.bannerList = result.banners
+    });
 
     return {
       downloadClient,
       staticNavList,
       defaultActive,
       setItemRef,
-      emberRef
+      emberRef,
+      ...toRefs(data)
     };
   },
 };
@@ -270,6 +298,13 @@ main {
         height: 100%;
         color: inherit;
         font-size: 14px;
+    }
+  }
+
+  .swiper-group {
+  
+    .swiper-image {
+      width: 100%;
     }
   }
 }

@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { defineAsyncComponent } from 'vue';
 
 const index = () => import('@/components/index/index.vue');
-
 const routes = [
     {
         path: '/',
