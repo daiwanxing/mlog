@@ -10,7 +10,7 @@
               :pagination="{ clickable: true, bulletActiveClass: 'net-bullet-active', bulletClass: 'net-bullet' }"
           >
             <swiper-slide
-                v-for="(item, index) in bannerData.bannerList"
+                v-for="(item, index) in bannerList"
                 :key="index"
             >
               <img :src="item.imageUrl" :alt="item.typeTitle" class="swiper-image">
@@ -26,25 +26,25 @@
 </template>
 
 <script>
+import { fetchBanner } from '@/api/index';
 import { installSwiperModule } from "@/useSetup/useSwiper.js";
-import { toRefs, toRef } from 'vue';
+import { reactive, toRefs } from 'vue';
 
 export default {
   name: "recommend-music",
   components: {
     ...installSwiperModule(),
   },
-  props: {
-        data: {
-            type: Object,
-            required: true,
-            default: {}
-        }
-  },
-  setup(props) {
-      let { data } = toRefs(props);
+  setup() {
+    const data = reactive({
+        bannerList: null
+    });
+    fetchBanner().then(result => {
+        data.bannerList = result.banners || [];
+    });
+
       return {
-          bannerData: data
+          ...toRefs(data)
       }
   },
 };

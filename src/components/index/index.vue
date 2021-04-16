@@ -133,7 +133,7 @@
       </ul>
     </nav>
     <keep-alive>
-      <component :is="compoenntId" :data="propsData"></component>
+      <component :is="compoenntId"></component>
     </keep-alive>
   </main>
 </template>
@@ -144,7 +144,6 @@ import hotSong from '../hot-song/hot-song.vue';
 import searchPage from '../search-page/search-page.vue';
 import { debounce } from 'lodash-es';
 import { ref, onMounted, watch, onBeforeUnmount, reactive, toRefs } from 'vue';
-import { fetchBanner } from '@/api/index';
 
 export default {
   name: "index",
@@ -154,7 +153,6 @@ export default {
     searchPage
   },
   setup() {
-    const propsData = reactive({});
     const compoenntId = ref('recommend-music');
     const staticNavList = [
       {
@@ -212,18 +210,13 @@ export default {
         compoenntId.value = staticNavList[index].val; // switch 对应的component
     });
 
-    fetchBanner().then(result => {
-        propsData.bannerList = result.banners;
-    });
-
     return {
       compoenntId,
       downloadClient,
       staticNavList,
       defaultActive,
       setItemRef,
-      emberRef,
-      propsData
+      emberRef
     };
   },
 };
