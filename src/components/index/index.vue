@@ -231,7 +231,10 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
     height: 84px;
+    z-index: 5;
     background-color: var(--mainTheme);
     padding: 0 4vw;
 
@@ -257,7 +260,12 @@ main {
   }
 
   nav {
+    position: sticky;
+    top: 84px;
+    background: #fff;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 5;
+
     .music-nav-list {
       display: flex;
       margin: 0;

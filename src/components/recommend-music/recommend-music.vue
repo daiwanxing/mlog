@@ -29,21 +29,26 @@
     <section class="song-list-group">
       <h3 class="sub-title">推荐歌单</h3>
       <div class="song-list-box">
-        <div 
-            class="song-list" 
-            v-for="item in songList"
-            :key="item.id"
-          >
-            <img :src="item.picUrl" alt="item.name" class="song-list-image">
-            <div class="song-list-title">{{item.name}}</div>
-        </div> 
+        <div class="song-list" v-for="item in songList" :key="item.id">
+          <img :src="item.picUrl" alt="item.name" class="song-list-image" />
+          <div class="song-list-title">{{ item.name }}</div>
+        </div>
       </div>
     </section>
     <!-- 最新音乐 -->
     <section class="new-music-group">
       <h3 class="sub-title">最新音乐</h3>
-      <div class="new-music-item">
-
+      <div class="new-music-box">
+        <div class="new-music-list">
+          <a 
+              class="new-music-item" 
+              v-for="item in newMusic" :key="item.id"
+              :href="`/song/${item.id}`"
+          >
+            <h3 class="music-title">{{ item.song.name + item.song.alias }}</h3>
+            <p class="music-creator">{{ item.song.artists[0].name }}</p>
+          </a>
+        </div>
       </div>
     </section>
   </section>
@@ -68,15 +73,15 @@ export default {
     let swiperVisible = ref(true); // 轮播容器是否显示
     let swiperIndex = ref(0); // 记住当前的轮播索引
 
-    fetchBanner().then(({ banners = []}) => {
+    fetchBanner().then(({ banners = [] }) => {
       data.bannerList = banners;
     });
     fetchSongList(6).then(({ result: songList = [] }) => {
-       data.songList = songList;
+      data.songList = songList;
     });
     fetchNewMusic().then(({ result: newMusic = [] }) => {
-       data.newMusic = newMusic;
-    });   
+      data.newMusic = newMusic;
+    });
 
     // 每次滑动，记录当前的轮播图的索引，当组件激活时，快速定位到上次轮播的位置
     function swiperHandler(data) {
@@ -151,22 +156,70 @@ export default {
   }
 
   .song-list {
-      width: 33%;
-      box-sizing: border-box;
-      margin-bottom: 14px;
+    width: 33%;
+    box-sizing: border-box;
+    margin-bottom: 14px;
 
-      .song-list-image {
-          width: 100%;
-      }
+    .song-list-image {
+      width: 100%;
+    }
 
-      .song-list-title {
-          display: -webkit-box;
-          overflow: hidden;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          text-overflow: ellipsis;
-          font-size: 14px;
-      }
+    .song-list-title {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
+  }
+
+  .new-music-box {
+    padding: 0 10px;
+  }
+
+  .new-music-item {
+    display: block;
+    padding: 4px 42px 4px 0;
+    box-sizing: border-box;
+    position: relative;
+    text-decoration: none;
+    color: #333;
+    // 长按 a 标签，会出现背景色 仅限于移动端
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        padding: 0 5px;
+        background: url("//s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=") no-repeat -24px 0 / 166px 97px;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #efeff0;
+    }
+
+    .music-title {
+      font-weight: 400;
+      margin: 0;
+      line-height: 26px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    .music-creator {
+      color: #888;
+      font-size: 14px;
+      line-height: 22px;
+      margin: 0;
+    }
   }
 }
 </style>
