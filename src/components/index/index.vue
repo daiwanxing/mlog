@@ -151,7 +151,7 @@ export default {
     searchPage,
   },
   setup() {
-    const compoenntId = ref("hot-song"); // TODO 部署的时候改为recommend-music
+    const compoenntId = ref("recommend-music"); // TODO 部署的时候改为recommend-music
     const staticNavList = [
       {
         name: "推荐音乐",
@@ -263,6 +263,7 @@ main {
       margin: 0;
       padding: 0;
       position: relative;
+      text-align: center;
     }
 
     .music-nav-item {

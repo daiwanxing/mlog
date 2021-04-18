@@ -1,8 +1,11 @@
 import axios from "axios";
 import { get, isObject } from 'lodash-es';
 
+const DEV_URL = "http://localhost:3001"; // 本地开发地址
+const DEPLOY_URL = "https://netease-cloud-music-api-one-hazel.vercel.app"; // 线上地址
+
 const instance = axios.create({
-    baseURL: "https://netease-cloud-music-api-one-hazel.vercel.app/",
+    baseURL: import.meta.env.DEV ? DEV_URL : DEPLOY_URL,
     timeout: 5000
 });
 
