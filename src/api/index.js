@@ -26,7 +26,8 @@ export function fetchSongList (limit) {
 export function fetchNewMusic (limit = 10) {
     return axios.get('/personalized/newsong', {
         params: {
-            limit
+            limit,
+            realIP: "116.25.146.177"
         }
     })
 }
