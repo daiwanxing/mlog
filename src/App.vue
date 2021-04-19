@@ -20,6 +20,12 @@
   color: #2c3e50;
 }
 
+a {
+  text-decoration: none;
+  /* 长按 a 标签，会出现背景色 仅限于移动端 */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
 ul {
   list-style: none;
 }

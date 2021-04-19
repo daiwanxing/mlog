@@ -1,56 +1,74 @@
 <template>
   <section class="recommend-music">
-    <div class="swiper-box">
-      <!-- 轮播容器 -->
-      <swiper
-        v-if="bannerList.length && swiperVisible"
-        loop
-        autoplay
-        :space-between="10"
-        :disableOnInteraction="false"
-        :initialSlide="swiperIndex"
-        :pagination="{
-          clickable: true,
-          bulletActiveClass: 'net-bullet-active',
-          bulletClass: 'net-bullet',
-        }"
-        @slideChange="swiperHandler"
-      >
-        <swiper-slide v-for="(item, index) in bannerList" :key="index">
-          <img
-            :src="item.imageUrl"
-            :alt="item.typeTitle"
-            class="swiper-image"
-          />
-        </swiper-slide>
-      </swiper>
-    </div>
-    <!-- 推荐歌单 -->
-    <section class="song-list-group">
-      <h3 class="sub-title">推荐歌单</h3>
-      <div class="song-list-box">
-        <div class="song-list" v-for="item in songList" :key="item.id">
-          <img :src="item.picUrl" alt="item.name" class="song-list-image" />
-          <div class="song-list-title">{{ item.name }}</div>
-        </div>
+    <template v-if="globalLoading">
+      <i class="loading-bar"></i>
+    </template>
+    <template v-else>
+      <div class="swiper-box">
+        <!-- 轮播容器 -->
+        <swiper
+          v-if="bannerList.length && swiperVisible"
+          loop
+          autoplay
+          :space-between="10"
+          :disableOnInteraction="false"
+          :initialSlide="swiperIndex"
+          :pagination="{
+            clickable: true,
+            bulletActiveClass: 'net-bullet-active',
+            bulletClass: 'net-bullet',
+          }"
+          @slideChange="swiperHandler"
+        >
+          <swiper-slide v-for="(item, index) in bannerList" :key="index">
+            <img
+              :src="item.imageUrl"
+              :alt="item.typeTitle"
+              class="swiper-image"
+            />
+          </swiper-slide>
+        </swiper>
       </div>
-    </section>
-    <!-- 最新音乐 -->
-    <section class="new-music-group">
-      <h3 class="sub-title">最新音乐</h3>
-      <div class="new-music-box">
-        <div class="new-music-list">
-          <a 
-              class="new-music-item" 
-              v-for="item in newMusic" :key="item.id"
-              :href="`/song/${item.id}`"
+      <!-- 推荐歌单 -->
+      <section class="song-list-group">
+        <h3 class="sub-title">推荐歌单</h3>
+        <div class="song-list-box">
+          <a
+              class="song-list"
+               v-for="item in songList"
+               :key="item.id"
+              :href="'/playlist?id='+ item.id"
           >
-            <h3 class="music-title">{{ item.song.name + item.song.alias }}</h3>
-            <p class="music-creator">{{ item.song.artists[0].name }}</p>
+            <img :src="item.picUrl" alt="item.name" class="song-list-image" />
+            <div class="song-list-title">{{ item.name }}</div>
           </a>
         </div>
-      </div>
-    </section>
+      </section>
+      <!-- 最新音乐 -->
+      <section class="new-music-group">
+        <h3 class="sub-title">最新音乐</h3>
+        <template v-if="false">
+          <error-page @retry="getMusicList"></error-page>
+        </template>
+        <template v-else>
+          <div class="new-music-box">
+            <div class="new-music-list">
+              <a
+                class="new-music-item"
+                v-for="item in newMusic"
+                :key="item.id"
+                :href="`/song/${item.id}`"
+              >
+                <h3 class="music-title">
+                  {{ item.song.name + item.song.alias }}
+                </h3>
+                <p class="music-creator">{{ item.song.artists[0].name }}</p>
+              </a>
+            </div>
+          </div>
+        </template>
+      </section>
+    </template>
   </section>
 </template>
 
@@ -58,13 +76,22 @@
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
 import { installSwiperModule } from "@/useSetup/useSwiper.js";
 import { reactive, toRefs, ref, onActivated, onDeactivated } from "vue";
+import errorPage from "@/common/error-page/error-page.vue";
+
+// TODO 1. 最新音乐添加Loading, 推荐歌单和banner图区域添加loading，
+// TODO 2. 完善推荐音乐底部 footer 样式，歌单播放数量展示, 歌单容器用a标签展示
+// 4/20 3. 开发搜索页面
+// 4/21 4. 开发热歌榜
 
 export default {
   name: "recommend-music",
   components: {
     ...installSwiperModule(),
+    errorPage,
   },
   setup() {
+    const requestError = ref(false);
+    const globalLoading = ref(false); // 全局loading
     const data = reactive({
       newMusic: [], // 推荐新音乐
       bannerList: [], // 首页轮播图列表
@@ -73,15 +100,27 @@ export default {
     let swiperVisible = ref(true); // 轮播容器是否显示
     let swiperIndex = ref(0); // 记住当前的轮播索引
 
-    fetchBanner().then(({ banners = [] }) => {
-      data.bannerList = banners;
-    });
-    fetchSongList(6).then(({ result: songList = [] }) => {
-      data.songList = songList;
-    });
-    fetchNewMusic().then(({ result: newMusic = [] }) => {
-      data.newMusic = newMusic;
-    });
+    globalLoading.value = true;
+    Promise.all([fetchBanner(), fetchSongList(6)])
+      .then(([{ banners }, { result }]) => {
+        data.bannerList = banners;
+        data.songList = result;
+      })
+      .catch((error) => {
+        console.error(error);
+        requestError.value = true;
+      })
+      .finally(() => {
+        globalLoading.value = false;
+      });
+
+    getMusicList();
+    function getMusicList() {
+      fetchNewMusic()
+        .then(({ result: newMusic = [] }) => {
+          data.newMusic = newMusic;
+        });
+    }
 
     // 每次滑动，记录当前的轮播图的索引，当组件激活时，快速定位到上次轮播的位置
     function swiperHandler(data) {
@@ -96,9 +135,11 @@ export default {
     });
 
     return {
+      globalLoading,
       swiperVisible,
       swiperHandler,
       swiperIndex,
+      getMusicList,
       ...toRefs(data),
     };
   },
@@ -167,6 +208,7 @@ export default {
     .song-list-title {
       display: -webkit-box;
       overflow: hidden;
+      color: #333;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       text-overflow: ellipsis;
@@ -183,21 +225,19 @@ export default {
     padding: 4px 42px 4px 0;
     box-sizing: border-box;
     position: relative;
-    text-decoration: none;
     color: #333;
-    // 长按 a 标签，会出现背景色 仅限于移动端
-    -webkit-tap-highlight-color:rgba(0,0,0,0);
 
     &::after {
-        content: "";
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 22px;
-        height: 22px;
-        padding: 0 5px;
-        background: url("//s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=") no-repeat -24px 0 / 166px 97px;
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      padding: 0 5px;
+      background: url("//s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=")
+        no-repeat -24px 0 / 166px 97px;
     }
 
     &:not(:last-child) {
@@ -205,21 +245,30 @@ export default {
     }
 
     .music-title {
-      font-weight: 400;
-      margin: 0;
-      line-height: 26px;
-      white-space: nowrap;
-      text-overflow: ellipsis;
       overflow: hidden;
+      margin: 0;
       font-size: 16px;
+      line-height: 26px;
+      font-weight: 400;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .music-creator {
+      margin: 0;
+      line-height: 22px;
       color: #888;
       font-size: 14px;
-      line-height: 22px;
-      margin: 0;
     }
+  }
+
+  .loading-bar {
+    display: block;
+    padding: 50px 0;
+    height: 20px;
+    background: url("data:image/gif;base64,R0lGODlhKAAoAIABANM6Mf///yH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkI2QURFODRFRkZBRTExRTU4NTg0QTdFMUQ4QkI2MTI1IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkI2QURFODRGRkZBRTExRTU4NTg0QTdFMUQ4QkI2MTI1Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QjZBREU4NENGRkFFMTFFNTg1ODRBN0UxRDhCQjYxMjUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QjZBREU4NERGRkFFMTFFNTg1ODRBN0UxRDhCQjYxMjUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4B//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eDf3t3c29rZ2NfW1dTT0tHQz87NzMvKycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaSjoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAh+QQJCgABACwAAAAAKAAoAAACeIyPqcvtD6OctNoD8rUZ7Np9VChKZAmdqKOuTOsqcIzMtGHfuaxxfbRrBGu/UfExXCRxxwRsGdg9m0IqpgmVYq1KbnTrMXmnYeAYzCtf1em2E11lf+VkFpxIP+f37td93dfF9zboVwhIaHfItJjoiBd4IzlJWalQAAAh+QQJCgABACwAAAAAKAAoAAACfIyPqcvtD6OctNqLs94WeB55AAiJ5GOeTaoubJu8nBzQGm0zuYF/0l7zIYAxocvIQzqAvVHROVRGoYemgqm0PpfZLjX53YqnV2nVWw5j1ejxkQ1Pc+Nu8FxeD4bJea2uzRf4hidotwJ4RvenmEg42IfoaFioB2N5iZmZUAAAIfkECQoAAQAsAAAAACgAKAAAAn+Mj6nL7Q+jnLRaCPK1GezafVTIaRIJmhE6qpg7sY98wg692g3+egnNm9mAup6C6EslD8hL8zcsGp4I6sI6jS6PWu42EAR3od8wVlyWor1s8m1chV/l2fQ3bm/j33m3n3F2tvfHREdYp1d4p5iIePgYqBbZB2goKIKZqbnJ+VAAACH5BAUKAAEALAAAAAAoACgAAAJ8jI+py+0PIwRUWkbB3Sjz731bKFpkGZ1mJaktm8KX29CT/Ng57ug9XwPeNC/iSLjwBY1DEFKhxDwTLl/0UH1eDVkmlNf9eqng8thqFquX606aTT6/pfJ6OznH5u/cfQBtF8cnSOgWSDcYBmeYqOWniFiod4hSaXmJmWlRAAA7")
+      no-repeat center;
+    background-size: 20px;
   }
 }
 </style>
