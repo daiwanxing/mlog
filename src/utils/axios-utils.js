@@ -2,7 +2,7 @@ import axios from "axios";
 import { get, isObject } from 'lodash-es';
 
 const DEV_URL = "http://localhost:3001"; // 本地开发地址
-const DEPLOY_URL = "https://netease-cloud-music-api-git-dev-daiwanxing.vercel.app"; // 线上地址
+const DEPLOY_URL = "https://music-api-chi.vercel.app"; // 线上地址
 
 const instance = axios.create({
     baseURL: import.meta.env.DEV ? DEV_URL : DEPLOY_URL,

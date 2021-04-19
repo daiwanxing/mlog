@@ -236,7 +236,7 @@ export default {
       width: 22px;
       height: 22px;
       padding: 0 5px;
-      background: url("//s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=")
+      background: url("https://s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=")
         no-repeat -24px 0 / 166px 97px;
     }
 
