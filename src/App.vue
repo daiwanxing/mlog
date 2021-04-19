@@ -4,7 +4,7 @@
 
 <script>
   export default {
-      name: "netMusic-App"
+    name: "netMusic-App"
   }
 </script>
 

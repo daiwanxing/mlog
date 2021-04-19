@@ -40,7 +40,7 @@
               :href="'/playlist?id='+ item.id"
               :data-playcount="translatorToMillon(item.playCount)"
           >
-            <img :src="item.picUrl" alt="item.name" class="song-list-image" />
+            <img :src="item.picUrl" :alt="item.name" class="song-list-image" />
             <div class="song-list-title">{{ item.name }}</div>
           </a>
         </div>
