@@ -1,7 +1,7 @@
 <template>
   <section class="recommend-music">
     <template v-if="globalLoading">
-      <i class="loading-bar"></i>
+      <loading-bar></loading-bar>
     </template>
     <template v-else>
       <div class="swiper-box">
@@ -74,10 +74,11 @@
 </template>
 
 <script>
+import errorPage from "@/common/error-page/error-page.vue";
+import loadingBar from '@/common/loading/loading.vue';
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
 import { installSwiperModule } from "@/useSetup/useSwiper.js";
 import { reactive, toRefs, ref, onActivated, onDeactivated } from "vue";
-import errorPage from "@/common/error-page/error-page.vue";
 import { translatorToMillon } from '@/utils/util';
 
 // TODO 1. 最新音乐添加Loading, 推荐歌单和banner图区域添加loading，
@@ -90,6 +91,7 @@ export default {
   components: {
     ...installSwiperModule(),
     errorPage,
+    loadingBar
   },
   setup() {
     const requestError = ref(false);
@@ -277,14 +279,6 @@ export default {
       color: #888;
       font-size: 14px;
     }
-  }
-
-  .loading-bar {
-    display: block;
-    padding: 50px 0;
-    height: 20px;
-    background: var(--icon-loading) no-repeat center;
-    background-size: 20px;
   }
 }
 </style>
