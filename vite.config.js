@@ -15,7 +15,10 @@ export default defineConfig({
     }
   },
   css: {
-    postcss: {}
+    postcss: {},
+    modules: {
+      localsConvention: "camelCaseOnly"
+    }
   },
   plugins: [vue()]
 })
