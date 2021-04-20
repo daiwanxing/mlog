@@ -8,49 +8,78 @@
           v-model.trim="searchKeyWords"
           class="animate__zoomIn"
         />
-        <transition 
-            enter-active-class="animate__animated animate__zoomIn animate__faster"
-            leave-active-class="animate__animated animate__zoomOut animate__faster"
+        <transition
+          enter-active-class="animate__zoomIn animate__faster"
+          leave-active-class="animate__zoomOut animate__faster"
         >
-            <i 
-                class="cancel-search animate__animated" 
-                @click="searchKeyWords = ''"
-                v-if="searchKeyWords"
-            ></i>
+          <i
+            class="cancel-search animate__animated"
+            @click="searchKeyWords = ''"
+            v-if="searchKeyWords"
+          ></i>
         </transition>
       </div>
     </div>
-    <div class="hot-search">
-      <!-- 热门搜索 -->
-      <div class="hot-search-chip"></div>
-    </div>
-    <!-- 搜索历史 -->
-    <div class="history-search"></div>
+    <template v-if="searchKeyWords">
+      <!-- 搜索建议列表 -->
+    </template>
+    <template v-else>
+      <div class="hot-search">
+        <!-- 热门搜索 -->
+        <span class="hot-search-title">热门搜索</span>
+        <div 
+            class="hot-search-chip"
+            v-for="(item, index) in hotSearchList.hots"
+            :key="index"
+            @click="searchKeyWords = item.first"
+        >{{item.first}}</div>
+      </div>
+      <!-- 搜索历史 -->
+      <div class="history-search"></div>
+    </template>
   </section>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, reactive, toRefs } from "vue";
 import { throttle } from "lodash-es";
-import { searchSuggest } from "@/api/index";
+import { fetchSearchSuggest, fetchHotSearch } from "@/api/index";
 
 export default {
   name: "search-page",
   setup() {
+    let data = reactive({
+      historySl: [], // 历史搜索列表
+      hotSearchList: [], // 热搜列表
+    });
+    data.historySl = JSON.parse(localStorage.getItem("histroySl")) || []; // 获取历史搜索记录
     const searchKeyWords = ref(""); // 搜索关键字
-
-    // 根据用户输入的关键字联想搜索建议
     const searchHandler = throttle(function () {
       if (searchKeyWords.value) {
-        searchSuggest(searchKeyWords.value).then((result) => {
+        data.historySl.push(searchKeyWords.value); // 存入到历史搜索记录中
+        // 根据用户输入的关键字联想搜索建议
+        fetchSearchSuggest(searchKeyWords.value).then((result) => {
           console.log(result);
         });
       }
-    }, 300);
+    }, 3000);
+
+    hotSearch();
+    // 热搜榜
+    function hotSearch() {
+      fetchHotSearch()
+        .then(({ result }) => {
+          data.hotSearchList = result;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
 
     return {
       searchKeyWords,
       searchHandler,
+      ...toRefs(data),
     };
   },
 };
@@ -58,9 +87,9 @@ export default {
 
 <style scoped lang="scss">
 .search-box {
-  border-bottom: 1px solid #ececec;
   .search-input {
     padding: 15px 10px;
+    border-bottom: 1px solid #ececec;
 
     .search-wrap {
       position: relative;
@@ -107,6 +136,27 @@ export default {
     input::-webkit-input-placeholder {
       font-size: 14px;
       color: #cfcfcf;
+    }
+  }
+
+  .hot-search { 
+    padding: 15px 10px;
+    
+    .hot-search-title {
+        color: #666;
+        font-size: 12px;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .hot-search-chip {
+      display: inline-block;
+      padding: 0 14px;
+      line-height: 30px;
+      border: 1px solid #d3d4da;
+      border-radius: 30px;
+      font-size: 13px;
+      margin: 0 8px 8px 0;
     }
   }
 }

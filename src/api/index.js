@@ -51,14 +51,14 @@ export function fetchSearch (keywords, limit = 6, type = 1) {
 /***
  * 热搜列表
  */
-export function hotSearchList () {
+export function fetchHotSearch () {
     return axios.get('/search/hot');
 }
 
 /***
  * 搜索建议
  */
-export function searchSuggest (keywords) {
+export function fetchSearchSuggest (keywords) {
     return axios.get('/search/suggest', {
         params: {
             type: "mobile",
