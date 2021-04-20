@@ -6,7 +6,7 @@
           type="text"
           placeholder="搜索歌曲、歌手、专辑"
           v-model.trim="searchKeyWords"
-          class="animate__zoomIn"
+          @input="searchHandler"
         />
         <transition
           enter-active-class="animate__zoomIn animate__faster"
@@ -22,17 +22,29 @@
     </div>
     <template v-if="searchKeyWords">
       <!-- 搜索建议列表 -->
+      <p class="suggest-words">搜索"{{searchKeyWords}}"</p>
+      <ul>
+        <li
+          class="suggest-item"
+          v-for="(item, index) in suggestSong"
+          :key="index"
+        >
+          {{ item.keyword }}
+        </li>
+      </ul>
     </template>
     <template v-else>
       <div class="hot-search">
         <!-- 热门搜索 -->
         <span class="hot-search-title">热门搜索</span>
-        <div 
-            class="hot-search-chip"
-            v-for="(item, index) in hotSearchList.hots"
-            :key="index"
-            @click="searchKeyWords = item.first"
-        >{{item.first}}</div>
+        <div
+          class="hot-search-chip"
+          v-for="(item, index) in hotSearchList.hots"
+          :key="index"
+          @click="searchKeyWords = item.first"
+        >
+          {{ item.first }}
+        </div>
       </div>
       <!-- 搜索历史 -->
       <div class="history-search"></div>
@@ -42,27 +54,34 @@
 
 <script>
 import { ref, reactive, toRefs } from "vue";
-import { throttle } from "lodash-es";
+import { debounce } from "lodash-es";
 import { fetchSearchSuggest, fetchHotSearch } from "@/api/index";
 
 export default {
   name: "search-page",
   setup() {
     let data = reactive({
+      suggestSong: [], // 联想列表
       historySl: [], // 历史搜索列表
       hotSearchList: [], // 热搜列表
     });
     data.historySl = JSON.parse(localStorage.getItem("histroySl")) || []; // 获取历史搜索记录
     const searchKeyWords = ref(""); // 搜索关键字
-    const searchHandler = throttle(function () {
+    const searchHandler = debounce(function () {
       if (searchKeyWords.value) {
-        data.historySl.push(searchKeyWords.value); // 存入到历史搜索记录中
+        // data.historySl.push(searchKeyWords.value); // 存入到历史搜索记录中
         // 根据用户输入的关键字联想搜索建议
-        fetchSearchSuggest(searchKeyWords.value).then((result) => {
-          console.log(result);
-        });
+        fetchSearchSuggest(searchKeyWords.value)
+          .then(({ result }) => {
+            data.suggestSong = result.allMatch || [];
+          })
+          .finally(function () {
+            //  localStorage.setItem("histroySl", JSON.stringify(data.historySl));
+          });
+      } else {
+        data.suggestSong = [];
       }
-    }, 3000);
+    }, 200);
 
     hotSearch();
     // 热搜榜
@@ -86,6 +105,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@mixin border-bottom-light {
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
 .search-box {
   .search-input {
     padding: 15px 10px;
@@ -139,14 +162,24 @@ export default {
     }
   }
 
-  .hot-search { 
+  .suggest-words {
+    color: #507daf;
+    padding: 10px;
+    margin: 0 0 0 10px;
+    @include border-bottom-light;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hot-search {
     padding: 15px 10px;
-    
+
     .hot-search-title {
-        color: #666;
-        font-size: 12px;
-        display: block;
-        margin-bottom: 10px;
+      color: #666;
+      font-size: 12px;
+      display: block;
+      margin-bottom: 10px;
     }
 
     .hot-search-chip {
@@ -157,6 +190,26 @@ export default {
       border-radius: 30px;
       font-size: 13px;
       margin: 0 8px 8px 0;
+    }
+  }
+
+  .suggest-item {
+    position: relative;
+    line-height: 44px;
+    font-size: 14px;
+    @include border-bottom-light;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 40px;
+      height: 100%;
+      background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNiAyNiI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBmaWxsPSIjYzljOWNhIiBkPSJNMjUuMTgxIDIzLjUzNWwtMS40MTQgMS40MTQtNy4zMTUtNy4zMTRBOS45NjYgOS45NjYgMCAwIDEgMTAgMjBDNC40NzcgMjAgMCAxNS41MjMgMCAxMFM0LjQ3NyAwIDEwIDBzMTAgNC40NzcgMTAgMTBjMCAyLjM0Mi0uODExIDQuNDktMi4xNiA2LjE5NWw3LjM0MSA3LjM0ek0xMCAyYTggOCAwIDEgMCAwIDE2IDggOCAwIDAgMCAwLTE2eiIvPjwvc3ZnPg==");
+      background-repeat: no-repeat;
+      background-size: 13px;
+      background-position: center;
     }
   }
 }
