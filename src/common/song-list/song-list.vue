@@ -83,6 +83,7 @@ export default {
     }
 
     .song-name {
+        height: 22px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
