@@ -52,21 +52,7 @@
           <error-page @retry="getMusicList"></error-page>
         </template>
         <template v-else>
-          <div class="new-music-box">
-            <div class="new-music-list">
-              <a
-                class="new-music-item"
-                v-for="item in newMusic"
-                :key="item.id"
-                :href="`/song/${item.id}`"
-              >
-                <h3 class="music-title">
-                  {{ item.song.name + item.song.alias }}
-                </h3>
-                <p class="music-creator">{{ item.song.artists[0].name }}</p>
-              </a>
-            </div>
-          </div>
+          <song-list :songs="newMusic"></song-list>
         </template>
       </section>
     </template>
@@ -74,6 +60,7 @@
 </template>
 
 <script>
+import songList from "@/common/song-list/song-list.vue";
 import errorPage from "@/common/error-page/error-page.vue";
 import loadingBar from '@/common/loading/loading.vue';
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
@@ -89,6 +76,7 @@ import { translatorToMillon } from '@/utils/util';
 export default {
   name: "recommend-music",
   components: {
+    songList,
     ...installSwiperModule(),
     errorPage,
     loadingBar
@@ -217,7 +205,7 @@ export default {
         font-size: 10px;
         background: var(--icon-earphone) no-repeat;
         background-size: 11px;
-        background-position-y: 2px;
+        background-position-y: 1px;
       }
 
     .song-list-image {
@@ -232,52 +220,6 @@ export default {
       -webkit-box-orient: vertical;
       text-overflow: ellipsis;
       font-size: 13px;
-    }
-  }
-
-  .new-music-box {
-    padding: 0 10px;
-  }
-
-  .new-music-item {
-    display: block;
-    padding: 4px 42px 4px 0;
-    box-sizing: border-box;
-    position: relative;
-    color: #333;
-
-    &::after {
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 22px;
-      height: 22px;
-      padding: 0 5px;
-      background: url("https://s3.music.126.net/mobile-new/img/index_icon_2x.png?5207a28c3767992ca4bb6d4887c74880=")
-        no-repeat -24px 0 / 166px 97px;
-    }
-
-    &:not(:last-child) {
-      border-bottom: 1px solid #efeff0;
-    }
-
-    .music-title {
-      overflow: hidden;
-      margin: 0;
-      font-size: 16px;
-      line-height: 26px;
-      font-weight: 400;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .music-creator {
-      margin: 0;
-      line-height: 22px;
-      color: #888;
-      font-size: 14px;
     }
   }
 }
