@@ -35,15 +35,17 @@ export function fetchNewMusic (limit = 10) {
 /***
  * 根据搜索关键字获取搜索 歌手 / 歌曲 / 专辑
  * @param keywords 搜索关键字
- * @param limit 搜索的条数
+ * @param limit 搜索的条数 默认30条
+ * @param offset  偏移值 分页
  * @param type 搜索类型 1 为单曲 10： 专辑 100：歌手 1000：歌单 1002：用户
  */
-export function fetchSearch (keywords, limit = 6, type = 1) {
+export function fetchSearch (keywords, limit = 30, type = 1, offset = 0) {
     return axios.get('/search', {
         params: {
             keywords,
             limit,
-            type
+            type,
+            offset
         }
     });
 }

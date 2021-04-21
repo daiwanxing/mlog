@@ -7,6 +7,7 @@
 <script setup>
 </script>
 
+
 <style scoped lang="scss">
 .netmusic-loading {
   .loading-bar {

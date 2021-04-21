@@ -9,3 +9,14 @@ export function translatorToMillon (number) {
     number = number.toString();
     return number.substr(0, number.length - 4) + '.' + number.substr(number.length - 4, 1) + '万';
 }
+
+/**
+ * 将数据存入到localStorage 
+ */
+export function setStorage (key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function getStorage (key, defaultValue = {}) {
+    return JSON.parse(localStorage.getItem(key)) || defaultValue;
+}

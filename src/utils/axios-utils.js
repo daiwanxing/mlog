@@ -6,7 +6,7 @@ const DEPLOY_URL = "https://music-api-chi.vercel.app"; // 线上地址
 
 const instance = axios.create({
     baseURL: import.meta.env.DEV ? DEV_URL : DEPLOY_URL,
-    timeout: 5000
+    timeout: 10000
 });
 
 instance.interceptors.response.use(function (res) {

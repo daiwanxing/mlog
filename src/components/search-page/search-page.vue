@@ -6,7 +6,8 @@
           type="text"
           placeholder="搜索歌曲、歌手、专辑"
           v-model.trim="searchKeyWords"
-          @input="searchHandler"
+          @input="searchSuggestHandler"
+          @keyup.enter="searchByWords"
         />
         <transition
           enter-active-class="animate__zoomIn animate__faster"
@@ -22,7 +23,8 @@
     </div>
     <template v-if="searchKeyWords">
       <!-- 搜索建议列表 -->
-      <p class="suggest-words">搜索"{{searchKeyWords}}"</p>
+      <p class="suggest-words">搜索"{{ searchKeyWords }}"</p>
+      <loading v-if="loading"></loading>
       <ul>
         <li
           class="suggest-item"
@@ -53,30 +55,40 @@
 </template>
 
 <script>
+import loading from "@/common/loading/loading.vue";
 import { ref, reactive, toRefs } from "vue";
 import { debounce } from "lodash-es";
-import { fetchSearchSuggest, fetchHotSearch } from "@/api/index";
+import { fetchSearchSuggest, fetchHotSearch, fetchSearch } from "@/api/index";
+import { getStorage, setStorage } from "@/utils/util";
 
 export default {
   name: "search-page",
+  components: {
+    loading,
+  },
   setup() {
-    let data = reactive({
-      suggestSong: [], // 联想列表
+    const data = reactive({
+      songList: [], // 搜索结果列表
+      suggestSong: [], // 搜索建议列表
       historySl: [], // 历史搜索列表
       hotSearchList: [], // 热搜列表
     });
-    data.historySl = JSON.parse(localStorage.getItem("histroySl")) || []; // 获取历史搜索记录
-    const searchKeyWords = ref(""); // 搜索关键字
-    const searchHandler = debounce(function () {
+
+    data.historySl = getStorage("histroySl", []); // 获取历史搜索记录
+    const searchKeyWords = ref(""); // 要搜索的关键字
+    const loading = ref(false); // 加载状态
+    // 搜索建议
+    const searchSuggestHandler = debounce(function () {
       if (searchKeyWords.value) {
-        // data.historySl.push(searchKeyWords.value); // 存入到历史搜索记录中
         // 根据用户输入的关键字联想搜索建议
+        data.suggestSong.splice(0);
+        loading.value = true;
         fetchSearchSuggest(searchKeyWords.value)
           .then(({ result }) => {
             data.suggestSong = result.allMatch || [];
           })
           .finally(function () {
-            //  localStorage.setItem("histroySl", JSON.stringify(data.historySl));
+            loading.value = false;
           });
       } else {
         data.suggestSong = [];
@@ -84,7 +96,7 @@ export default {
     }, 200);
 
     hotSearch();
-    // 热搜榜
+    // 获取热搜榜
     function hotSearch() {
       fetchHotSearch()
         .then(({ result }) => {
@@ -92,23 +104,45 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        })
+        .finally(() => {});
+    }
+
+    const searchState = ref(false); // 页面是否正处于搜索状态
+    function searchByWords() {
+      loading.value = true;
+      const songName = searchKeyWords.value;
+      if (!data.historySl.includes(songName)) {
+          data.historySl.push(songName); // 存入到历史搜索记录中
+      }
+      fetchSearch(songName)
+        .then((result) => {
+          console.log(result);
+          setStorage("histroySl", data.historySl);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(function () {
+          loading.value = false;
         });
     }
 
     return {
-      color: "red",
+      loading,
       searchKeyWords,
-      searchHandler,
+      searchByWords,
+      searchSuggestHandler,
       ...toRefs(data),
     };
-  }
+  },
 };
 </script>
 
 <style scoped lang="scss">
 // https://github.com/vuejs/rfcs/pull/231
 @mixin border-bottom-light {
-  border-bottom: 1px solid rgba(0,0,0,.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .search-box {
