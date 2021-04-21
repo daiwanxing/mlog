@@ -32,7 +32,7 @@
  */
 import { toRef } from "vue";
 export default {
-  name: "song-list",
+  name: "song-list",  
   props: {
     songs: {
       type: Array,
@@ -43,7 +43,6 @@ export default {
   },
   setup(props) {
     const songs = toRef(props, "songs");
-
     return {
       songs,
     };

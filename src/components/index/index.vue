@@ -151,7 +151,7 @@ export default {
     searchPage,
   },
   setup() {
-    const compoenntId = ref("search-page"); // TODO 部署的时候改为recommend-music
+    const compoenntId = ref("recommend-music"); // TODO 部署的时候改为recommend-music
     const staticNavList = [
       {
         name: "推荐音乐",

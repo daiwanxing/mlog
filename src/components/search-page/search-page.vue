@@ -25,7 +25,8 @@
       <!-- 搜索建议列表 -->
       <p class="suggest-words">搜索"{{ searchKeyWords }}"</p>
       <loading v-if="loading"></loading>
-      <ul>
+      <!-- 显示建议列表 / 歌单列表 -->
+      <ul class="suggest-group">
         <li
           class="suggest-item"
           v-for="(item, index) in suggestSong"
@@ -49,7 +50,14 @@
         </div>
       </div>
       <!-- 搜索历史 -->
-      <div class="history-search"></div>
+      <div class="history-search">
+         <ul class="his-search-group suggest-group">
+           <li v-for="(item, index) in historySl" :key="index" class="suggest-item history-chip">
+             {{item}}
+             <i class="del-button-outline" @click="delSearchHistory(item)"></i>
+            </li>
+         </ul>
+      </div>
     </template>
   </section>
 </template>
@@ -74,7 +82,7 @@ export default {
       hotSearchList: [], // 热搜列表
     });
 
-    data.historySl = getStorage("histroySl", []); // 获取历史搜索记录
+    data.historySl = getStorage("historySl", []); // 获取历史搜索记录
     const searchKeyWords = ref(""); // 要搜索的关键字
     const loading = ref(false); // 加载状态
     // 搜索建议
@@ -117,8 +125,7 @@ export default {
       }
       fetchSearch(songName)
         .then((result) => {
-          console.log(result);
-          setStorage("histroySl", data.historySl);
+          setStorage("historySl", data.historySl);
         })
         .catch((error) => {
           console.log(error);
@@ -128,11 +135,21 @@ export default {
         });
     }
 
+    // 删除历史搜索记录
+    function delSearchHistory (msg) {
+        const delIdx = data.historySl.findIndex(item => item === msg);
+        if (delIdx > -1) {
+          data.historySl.splice(delIdx, 1);
+          setStorage("historySl", data.historySl);
+        }
+    }
+
     return {
       loading,
       searchKeyWords,
       searchByWords,
       searchSuggestHandler,
+      delSearchHistory,
       ...toRefs(data),
     };
   },
@@ -229,6 +246,10 @@ export default {
     }
   }
 
+  .suggest-group {
+    margin: 0;
+  }
+
   .suggest-item {
     position: relative;
     line-height: 44px;
@@ -247,6 +268,23 @@ export default {
       background-size: 13px;
       background-position: center;
     }
+  }
+
+  .history-chip::before {
+    background-image: var(--icon-clock);
+  }
+
+  .history-chip {
+    position: relative;
+  }
+
+  .del-button-outline {
+    position: absolute;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    background: var(--icon-del-lined) no-repeat center;
+    background-size: 12px;
   }
 }
 </style>
