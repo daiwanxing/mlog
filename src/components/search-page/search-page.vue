@@ -6,8 +6,9 @@
           type="text"
           placeholder="搜索歌曲、歌手、专辑"
           v-model.trim="searchKeyWords"
-          @input="searchSuggestHandler"
           @keyup.enter="searchByWords"
+          @focus="focusHandler"
+          @input="updateSuggest"
         />
         <transition
           enter-active-class="animate__zoomIn animate__faster"
@@ -22,19 +23,13 @@
       </div>
     </div>
     <template v-if="searchKeyWords">
-      <!-- 搜索建议列表 -->
-      <p class="suggest-words">搜索"{{ searchKeyWords }}"</p>
-      <loading v-if="loading"></loading>
-      <!-- 显示建议列表 / 歌单列表 -->
-      <ul class="suggest-group">
-        <li
-          class="suggest-item"
-          v-for="(item, index) in suggestSong"
-          :key="index"
-        >
-          {{ item.keyword }}
-        </li>
-      </ul>
+      <!-- <component :is="componentId"></component> -->
+      <suggest-search
+        :searchWords="searchKeyWords"
+        :suggestSong="suggestSong"
+        :loading="loading"
+        @searchHandler="searchByWords"
+      />
     </template>
     <template v-else>
       <div class="hot-search">
@@ -44,35 +39,51 @@
           class="hot-search-chip"
           v-for="(item, index) in hotSearchList.hots"
           :key="index"
-          @click="searchKeyWords = item.first"
+          @click="suggestButton(item.first)"
         >
           {{ item.first }}
         </div>
       </div>
       <!-- 搜索历史 -->
       <div class="history-search">
-         <ul class="his-search-group suggest-group">
-           <li v-for="(item, index) in historySl" :key="index" class="suggest-item history-chip">
-             {{item}}
-             <i class="del-button-outline" @click="delSearchHistory(item)"></i>
-            </li>
-         </ul>
+        <ul class="his-search-group suggest-group">
+          <li
+            v-for="item in historySl"
+            :key="item"
+            class="suggest-item history-chip"
+            @click="suggestButton(item)"
+          >
+            {{ item }}
+            <i
+              class="del-button-outline"
+              @click.stop="delSearchHistory(item)"
+            ></i>
+          </li>
+        </ul>
       </div>
     </template>
   </section>
 </template>
 
 <script>
+import searchResult from "./search-result/search-result.vue";
+import suggestSearch from "./suggest-result/suggest-result.vue";
 import loading from "@/common/loading/loading.vue";
-import { ref, reactive, toRefs } from "vue";
+import { ref, reactive, toRefs, watch } from "vue";
 import { debounce } from "lodash-es";
 import { fetchSearchSuggest, fetchHotSearch, fetchSearch } from "@/api/index";
 import { getStorage, setStorage } from "@/utils/util";
+
+// 未主动搜索： 如果有搜索关键字，展示搜索建议列表
+// 主动搜索，关闭搜索建议列表，关闭历史记录列表
+// input控件获取焦点事件，清空搜索结果列表
 
 export default {
   name: "search-page",
   components: {
     loading,
+    suggestSearch,
+    searchResult,
   },
   setup() {
     const data = reactive({
@@ -87,20 +98,15 @@ export default {
     const loading = ref(false); // 加载状态
     // 搜索建议
     const searchSuggestHandler = debounce(function () {
-      if (searchKeyWords.value) {
-        // 根据用户输入的关键字联想搜索建议
-        data.suggestSong.splice(0);
-        loading.value = true;
-        fetchSearchSuggest(searchKeyWords.value)
-          .then(({ result }) => {
-            data.suggestSong = result.allMatch || [];
-          })
-          .finally(function () {
-            loading.value = false;
-          });
-      } else {
-        data.suggestSong = [];
-      }
+      // 根据用户输入的关键字联想搜索建议
+      loading.value = true;
+      fetchSearchSuggest(searchKeyWords.value)
+        .then(({ result }) => {
+          data.suggestSong = result.allMatch || [];
+        })
+        .finally(function () {
+          loading.value = false;
+        });
     }, 200);
 
     hotSearch();
@@ -116,40 +122,65 @@ export default {
         .finally(() => {});
     }
 
+    // 两种状态， 建议搜索态， 主动搜索态
+    // suggestSearch searchResult 切换两个组件得展示
     const searchState = ref(false); // 页面是否正处于搜索状态
-    function searchByWords() {
-      loading.value = true;
-      const songName = searchKeyWords.value;
+    const suggestState = ref(false); // 建议态
+    function searchByWords(searchName = null) {
+      searchState.value = true;
+      const songName =
+        typeof searchName === "string" ? searchName : searchKeyWords.value;
       if (!data.historySl.includes(songName)) {
-          data.historySl.push(songName); // 存入到历史搜索记录中
+        data.historySl.push(songName); // 存入到历史搜索记录中
       }
       fetchSearch(songName)
-        .then((result) => {
+        .then(({ result }) => {
           setStorage("historySl", data.historySl);
+          data.songList = result.songs;
         })
         .catch((error) => {
           console.log(error);
         })
         .finally(function () {
-          loading.value = false;
+          searchState.value = false;
         });
     }
 
     // 删除历史搜索记录
-    function delSearchHistory (msg) {
-        const delIdx = data.historySl.findIndex(item => item === msg);
-        if (delIdx > -1) {
-          data.historySl.splice(delIdx, 1);
-          setStorage("historySl", data.historySl);
-        }
+    function delSearchHistory(msg) {
+      const delIdx = data.historySl.findIndex((item) => item === msg);
+      if (delIdx > -1) {
+        data.historySl.splice(delIdx, 1);
+        setStorage("historySl", data.historySl);
+      }
+    }
+
+    function focusHandler() {
+      // 这是一个心智负担，每当我定义一个模板需要用到的方法或者变量，我必须得时刻记住要return
+      data.songList = [];
+    }
+
+    function suggestButton (song) {
+      console.log(song);
+      searchKeyWords.value = song;
+      searchByWords();
+    }
+
+    function updateSuggest () {
+        data.suggestSong.splice(0);
+        searchSuggestHandler();
     }
 
     return {
+      suggestButton,
+      focusHandler,
       loading,
+      searchState,
       searchKeyWords,
       searchByWords,
       searchSuggestHandler,
       delSearchHistory,
+      updateSuggest,
       ...toRefs(data),
     };
   },
@@ -215,16 +246,6 @@ export default {
     }
   }
 
-  .suggest-words {
-    color: #507daf;
-    padding: 10px;
-    margin: 0 0 0 10px;
-    @include border-bottom-light;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .hot-search {
     padding: 15px 10px;
 
@@ -243,30 +264,6 @@ export default {
       border-radius: 30px;
       font-size: 13px;
       margin: 0 8px 8px 0;
-    }
-  }
-
-  .suggest-group {
-    margin: 0;
-  }
-
-  .suggest-item {
-    position: relative;
-    line-height: 44px;
-    font-size: 14px;
-    @include border-bottom-light;
-
-    &::before {
-      content: "";
-      position: absolute;
-      left: -40px;
-      top: 0;
-      width: 40px;
-      height: 100%;
-      background: var(--icon-loupe);
-      background-repeat: no-repeat;
-      background-size: 13px;
-      background-position: center;
     }
   }
 
