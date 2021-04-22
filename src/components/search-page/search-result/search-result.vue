@@ -1,7 +1,9 @@
 <template>
     <div class="search-result-box">
         <loading-bar v-if="loading"></loading-bar>
-        <song-list v-else></song-list>
+        <song-list 
+            v-bind="$attrs"
+        ></song-list>
     </div>
 </template>
 

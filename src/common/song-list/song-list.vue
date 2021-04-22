@@ -2,23 +2,23 @@
   <ul class="songs-group--list">
     <li v-for="(item, idx) in songs" :key="idx" class="song-item">
       <a class="song-link" :href="`/song/${item.id}`">
-        <div class="song-name" :data-alias="item.song.alias">{{item.song.name}}&nbsp;</div>
+        <div class="song-name" :data-alias="item.alias">{{item.name}}&nbsp;</div>
         <div class="song-author-info">
             <!-- SQ 独家 VIP -->
             <div class="mark-box">
-                <template v-if="item.song.exclusive">
+                <template v-if="item.exclusive">
                     <span>独家</span>
                 </template>
             </div>
             <!-- 作者列表 -->
             <div class="author-list">
                 <template
-                    v-for="(author, idx) in item.song.artists"
+                    v-for="(author, idx) in item.artists"
                     :key="idx"
                 >
-                    {{author.name}} {{ idx !== item.song.artists.length - 1 ? "/&nbsp;" : ""}}
+                    {{author.name}} {{ idx !== item.artists.length - 1 ? "/&nbsp;" : ""}}
                 </template>
-                - {{item.song.album.name}}
+                - {{item.album.name}}
             </div>
         </div>
       </a>
@@ -44,7 +44,7 @@ export default {
   setup(props) {
     const songs = toRef(props, "songs");
     return {
-      songs,
+      songs
     };
   },
 };

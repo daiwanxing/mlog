@@ -6,8 +6,7 @@
           type="text"
           placeholder="搜索歌曲、歌手、专辑"
           v-model.trim="searchKeyWords"
-          @keyup.enter="searchByWords"
-          @focus="focusHandler"
+          @keyup.enter="searchSongHandler(searchKeyWords)"
           @input="updateSuggest"
         />
         <transition
@@ -24,34 +23,36 @@
     </div>
     <template v-if="searchKeyWords">
       <suggest-search
+        v-if="suggestState"
         :searchWords="searchKeyWords"
         :suggestSong="suggestSong"
         :loading="loading"
-        @searchHandler="searchByWords"
+        @searchHandler="searchSongHandler"
       />
+      <search-result
+        v-if="searchState"
+        :loading="loading"
+        :songs="songList"
+      ></search-result>
     </template>
     <template v-else>
       <!-- 热搜列表 -->
-      <hot-search></hot-search>
+      <hot-search @searchHandler="searchSongHandler"></hot-search>
       <!-- 搜索历史 -->
-      <history-record></history-record>
+      <history-record @searchHandler="searchSongHandler"></history-record>
     </template>
   </section>
 </template>
 
 <script>
-import hotSearch from './hot-search/hot-search.vue';
-import historyRecord from './history-record/history-record.vue';
+import hotSearch from "./hot-search/hot-search.vue";
+import historyRecord from "./history-record/history-record.vue";
 import searchResult from "./search-result/search-result.vue";
 import suggestSearch from "./suggest-result/suggest-result.vue";
 import loading from "@/common/loading/loading.vue";
 import { ref, reactive, toRefs } from "vue";
 import { debounce } from "lodash-es";
 import { fetchSearchSuggest, fetchSearch } from "@/api/index";
-
-// 未主动搜索： 如果有搜索关键字，展示搜索建议列表
-// 主动搜索，关闭搜索建议列表，关闭历史记录列表
-// input控件获取焦点事件，清空搜索结果列表
 
 export default {
   name: "search-page",
@@ -60,19 +61,19 @@ export default {
     suggestSearch,
     searchResult,
     historyRecord,
-    hotSearch
+    hotSearch,
   },
   setup() {
     const data = reactive({
       songList: [], // 搜索结果列表
-      suggestSong: [] // 搜索建议列表
+      suggestSong: [], // 搜索建议列表
     });
 
     const searchKeyWords = ref(""); // 要搜索的关键字
     const loading = ref(false); // 加载状态
-    // 搜索建议
+
+    const suggestState = ref(false); // 建议态
     const searchSuggestHandler = debounce(function () {
-      // 根据用户输入的关键字联想搜索建议
       loading.value = true;
       fetchSearchSuggest(searchKeyWords.value)
         .then(({ result }) => {
@@ -83,14 +84,11 @@ export default {
         });
     }, 200);
 
-    // 两种状态， 建议搜索态， 主动搜索态
-    // suggestSearch searchResult 切换两个组件得展示
-    const searchState = ref(false); // 页面是否正处于搜索状态
-    const suggestState = ref(false); // 建议态
-    function searchByWords(searchName = null) {
-      searchState.value = true;
-      const songName =
-        typeof searchName === "string" ? searchName : searchKeyWords.value;
+    const searchState = ref(false); // 搜索态
+    function searchByWords() {
+      loading.value = true;
+      data.songList = [];
+      const songName = searchKeyWords.value;;
       fetchSearch(songName)
         .then(({ result }) => {
           data.songList = result.songs;
@@ -99,33 +97,35 @@ export default {
           console.log(error);
         })
         .finally(function () {
-          searchState.value = false;
+          loading.value = false;
         });
     }
 
-    function focusHandler() {
-      // 这是一个心智负担，每当我定义一个模板需要用到的方法或者变量，我必须得时刻记住要return
-      data.songList = [];
+    function updateSuggest() {
+      data.suggestSong = [];
+      searchState.value = false; // 搜索态关闭
+      suggestState.value = true; // 建议态开启
+      searchSuggestHandler();
     }
 
-    function suggestButton (song) {
-      searchKeyWords.value = song;
-      searchByWords();
+    function searchSongHandler(data) {
+       if (data) {
+         suggestState.value = false; // 建议态关闭
+         searchState.value = true; // 搜索态开启
+         searchKeyWords.value = data;
+         searchByWords();
+       }
     }
 
-    function updateSuggest () {
-        data.suggestSong.splice(0);
-        searchSuggestHandler();
-    }
+    // 搜索态的出现时机，1. 点击历史记录某一项， 点击热搜建议， 3. 输入框回车且内容不为空
+    // 建议态出现时机： 仅仅input事件触发,
 
     return {
-      suggestButton,
-      focusHandler,
+      suggestState,
       loading,
       searchState,
       searchKeyWords,
-      searchByWords,
-      searchSuggestHandler,
+      searchSongHandler,
       updateSuggest,
       ...toRefs(data),
     };

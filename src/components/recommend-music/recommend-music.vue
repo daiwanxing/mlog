@@ -52,7 +52,7 @@
           <error-page @retry="getMusicList"></error-page>
         </template>
         <template v-else>
-          <song-list :songs="newMusic"></song-list>
+          <song-list :songs="newMusicList"></song-list>
         </template>
       </section>
     </template>
@@ -65,7 +65,7 @@ import errorPage from "@/common/error-page/error-page.vue";
 import loadingBar from '@/common/loading/loading.vue';
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
 import { installSwiperModule } from "@/useSetup/useSwiper.js";
-import { reactive, toRefs, ref, onActivated, onDeactivated } from "vue";
+import { reactive, toRefs, ref, onActivated, onDeactivated, computed } from "vue";
 import { translatorToMillon } from '@/utils/util';
 
 // TODO 1. 最新音乐添加Loading, 推荐歌单和banner图区域添加loading，
@@ -126,7 +126,10 @@ export default {
       swiperVisible.value = true;
     });
 
+    const newMusicList = computed(() => data.newMusic.map(item => item.song));
+
     return {
+      newMusicList,
       globalLoading,
       swiperVisible,
       swiperHandler,

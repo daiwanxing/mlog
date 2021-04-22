@@ -14,8 +14,6 @@
 </template>
 
 <script>
-// 热搜组件：职责，获取热搜列表数据并展示 done
-// 2. 点击热搜项， emit 给 历史记录组件，存入到历史记录， 告诉父组件，搜索音乐
 import { fetchHotList, hotSelectHandler } from "@/useComposition/useHotSearch";
 import { ref } from "vue";
 
