@@ -1,4 +1,4 @@
-import mitt, { MESSAGE_CONSTANTS } from "mitt";
+import mitt, { MESSAGE_CONSTANTS } from "@/utils/mitt";
 import STORAGE_LIST from "@/utils/STORAGE-LIST";
 import { getStorage, setStorage } from "@/utils/util";
 import { ref } from "vue";
