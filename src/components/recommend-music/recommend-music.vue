@@ -68,9 +68,7 @@ import { installSwiperModule } from "@/useComposition/useSwiper.js";
 import { reactive, toRefs, ref, onActivated, onDeactivated, computed } from "vue";
 import { translatorToMillon } from '@/utils/util';
 
-// TODO 1. 最新音乐添加Loading, 推荐歌单和banner图区域添加loading，
 // TODO 2. 完善推荐音乐底部 footer 样式，歌单播放数量展示, 歌单容器用a标签展示
-// 4/20 3. 开发搜索页面
 // 4/21 4. 开发热歌榜
 
 export default {
@@ -201,14 +199,16 @@ export default {
       &::after {
         content: attr(data-playcount);
         position: absolute;
-        right: 4px;
-        top: 4px;
+        right: 0px;
+        top: 0px;
+        height: 18px;
+        line-height: 18px;
         padding-left: 14px;
         color: #fff;
         font-size: 10px;
         background: var(--icon-earphone) no-repeat;
-        background-size: 11px;
-        background-position-y: 1px;
+        background-size: 10px;
+        background-position-y: 4px;
       }
 
     .song-list-image {
