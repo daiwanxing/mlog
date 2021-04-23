@@ -7,7 +7,8 @@
     <div class="hot-list">
       <loading-page v-if="loading"></loading-page>
       <song-list 
-        v-else 
+        v-else
+        :isReference="true"
         :songs="hotSongList"
         />
     </div>
@@ -20,7 +21,7 @@ import songList from "@/common/song-list/song-list.vue";
 import loadingPage from "@/common/loading/loading.vue";
 import errorPage from '@/common/error-page/error-page.vue';
 import { songListDetailDto } from '@/api/dto/song-list-dto';
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onActivated } from "vue";
 import { fetchSongList } from "@/api/song-list.js";
 
 const HOT_SONG_ID = "2172703289"; // 热歌榜 - 歌单ID
@@ -53,7 +54,7 @@ function fetchAgain () {
     }, 3000);
 }
 
-onMounted(getSongListById);
+onActivated(getSongListById);
 </script>
 
 <style lang="scss">

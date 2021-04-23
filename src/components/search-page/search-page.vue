@@ -53,6 +53,7 @@ import loading from "@/common/loading/loading.vue";
 import { ref, reactive, toRefs } from "vue";
 import { debounce } from "lodash-es";
 import { fetchSearchSuggest, fetchSearch } from "@/api/index";
+import mitt, { MESSAGE_CONSTANTS } from '@/utils/mitt';
 
 export default {
   name: "search-page",
@@ -110,6 +111,7 @@ export default {
 
     function searchSongHandler(data) {
        if (data) {
+         mitt.emit(MESSAGE_CONSTANTS.ADD_HISTORY, data);
          suggestState.value = false; // 建议态关闭
          searchState.value = true; // 搜索态开启
          searchKeyWords.value = data;

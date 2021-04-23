@@ -1,6 +1,11 @@
 <template>
-  <ul class="songs-group--list">
-    <li v-for="(item, idx) in songs" :key="idx" class="song-item">
+  <ul :class="['songs-group--list', { 'padding-x': !isReference }]">
+    <li 
+        v-for="(item, idx) in songs" 
+        :key="idx" 
+        :data-ref="idx + 1 < 10 ? '0' + (idx + 1) : idx + 1"
+        :class="['song-item', { toNum: isReference}]"
+      >
       <a class="song-link" :href="`/song/${item.id}`">
         <div class="song-name" :data-alias="item.alias">{{item.name}}&nbsp;</div>
         <div class="song-author-info">
@@ -31,6 +36,7 @@
  * 歌曲列表组件
  */
 import { toRef } from "vue";
+
 export default {
   name: "song-list",  
   props: {
@@ -40,6 +46,11 @@ export default {
         return [];
       },
     },
+    // 是否编号
+    isReference: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props) {
     const songs = toRef(props, "songs");
@@ -52,12 +63,31 @@ export default {
 
 <style scoped lang="scss">
 .songs-group--list {
-  padding: 0 10px;
+
+  &.padding-x {
+    padding: 0 10px;
+  }
 
   .song-item {
     border-bottom: 1px solid #efeff0;
     padding-right: 42px;
     position: relative;
+
+    &:nth-child(-n + 3)::before {
+      color: var(--textTheme);
+    }
+
+    &::before {
+      content: attr(data-ref);
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 40px;
+      height: 100%;
+      line-height: 3;
+      text-align: center;
+      color: #999;
+    }
 
     &::after {
         content: "";
