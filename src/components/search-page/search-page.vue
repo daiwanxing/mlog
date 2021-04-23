@@ -117,9 +117,6 @@ export default {
        }
     }
 
-    // 搜索态的出现时机，1. 点击历史记录某一项， 点击热搜建议， 3. 输入框回车且内容不为空
-    // 建议态出现时机： 仅仅input事件触发,
-
     return {
       suggestState,
       loading,
