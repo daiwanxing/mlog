@@ -1,6 +1,10 @@
 <template>
     <section class="error-found-box" @click="$emit('retry')">
-         <img src="https://s3.music.126.net/mobile-new/img/load_error_2x.png?9861afed1332e893b2d265d362311797=" alt="加载失败，点击重试" class="error-found-image">
+         <img 
+            src="https://s3.music.126.net/mobile-new/img/load_error_2x.png?9861afed1332e893b2d265d362311797=" 
+            alt="加载失败，点击重试" 
+            class="error-found-image"
+        >
          <p class="error-found-text">{{tips}}</p>
     </section>
 </template>

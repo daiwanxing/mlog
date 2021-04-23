@@ -16,11 +16,12 @@
 </template>
 
 <script setup>
-import { fetchSongList } from "@/api/song-list.js";
 import songList from "@/common/song-list/song-list.vue";
 import loadingPage from "@/common/loading/loading.vue";
 import errorPage from '@/common/error-page/error-page.vue';
+import { songListDetailDto } from '@/api/dto/song-list-dto';
 import { computed, ref, onMounted } from "vue";
+import { fetchSongList } from "@/api/song-list.js";
 
 const HOT_SONG_ID = "2172703289"; // 热歌榜 - 歌单ID
 
@@ -31,12 +32,12 @@ const today = computed(() => {
 
 const hotSongList = ref([]); // 热歌榜
 const loading = ref(false); // 加载状态
-const error = ref(true); // 请求出错
+const error = ref(false); // 请求出错
 const getSongListById = async () => {
   loading.value = true;
   try {
     const { playlist } = await fetchSongList(HOT_SONG_ID);
-    hotSongList.value = playlist.tracks || [];
+    hotSongList.value = songListDetailDto(playlist.tracks || []);
     loading.value = false;
   } catch (e) {
     error.value = true;
@@ -52,7 +53,7 @@ function fetchAgain () {
     }, 3000);
 }
 
-// onMounted(getSongListById);
+onMounted(getSongListById);
 </script>
 
 <style lang="scss">
