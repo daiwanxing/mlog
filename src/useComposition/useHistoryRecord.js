@@ -6,6 +6,10 @@ import { ref } from "vue";
 export default function useHistoryRecord() {
     const recordList = ref(getStorage(STORAGE_LIST.HISTORY_STORAGE, []));
 
+    const removeRecordListener = function () {
+        mitt.off(MESSAGE_CONSTANTS.ADD_HISTORY);
+    }
+
     // 新增历史记录
     const addRecordListener = function () {
         mitt.on(MESSAGE_CONSTANTS.ADD_HISTORY, function (data) {
@@ -28,6 +32,7 @@ export default function useHistoryRecord() {
     return {
         addRecordListener,
         removeRecord,
-        recordList
+        recordList,
+        removeRecordListener
     }
 }

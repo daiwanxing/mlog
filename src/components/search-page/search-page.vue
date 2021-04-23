@@ -8,6 +8,8 @@
           v-model.trim="searchKeyWords"
           @keyup.enter="searchSongHandler(searchKeyWords)"
           @input="updateSuggest"
+          @compositionstart="chinesePrinterStart"
+          @compositionend="chinesePrinterEnd"
         />
         <transition
           enter-active-class="animate__zoomIn animate__faster"
@@ -39,8 +41,11 @@
       <!-- 热搜列表 -->
       <hot-search @searchHandler="searchSongHandler"></hot-search>
       <!-- 搜索历史 -->
-      <history-record @searchHandler="searchSongHandler"></history-record>
     </template>
+    <history-record
+      @searchHandler="searchSongHandler"
+      v-show="!searchKeyWords"
+    ></history-record>
   </section>
 </template>
 
@@ -53,7 +58,7 @@ import loading from "@/common/loading/loading.vue";
 import { ref, reactive, toRefs } from "vue";
 import { debounce } from "lodash-es";
 import { fetchSearchSuggest, fetchSearch } from "@/api/index";
-import mitt, { MESSAGE_CONSTANTS } from '@/utils/mitt';
+import mitt, { MESSAGE_CONSTANTS } from "@/utils/mitt";
 
 export default {
   name: "search-page",
@@ -72,6 +77,7 @@ export default {
 
     const searchKeyWords = ref(""); // 要搜索的关键字
     const loading = ref(false); // 加载状态
+    let fetchSuggFlag = true; // 是否可以调用建议搜索接口
 
     const suggestState = ref(false); // 建议态
     const searchSuggestHandler = debounce(function () {
@@ -89,7 +95,7 @@ export default {
     function searchByWords() {
       loading.value = true;
       data.songList = [];
-      const songName = searchKeyWords.value;;
+      const songName = searchKeyWords.value;
       fetchSearch(songName)
         .then(({ result }) => {
           data.songList = result.songs;
@@ -103,20 +109,31 @@ export default {
     }
 
     function updateSuggest() {
-      data.suggestSong = [];
-      searchState.value = false; // 搜索态关闭
-      suggestState.value = true; // 建议态开启
-      searchSuggestHandler();
+      if (fetchSuggFlag) {
+        data.suggestSong = [];
+        searchState.value = false; // 搜索态关闭
+        suggestState.value = true; // 建议态开启
+        searchKeyWords.value && searchSuggestHandler();
+      }
     }
 
     function searchSongHandler(data) {
-       if (data) {
-         mitt.emit(MESSAGE_CONSTANTS.ADD_HISTORY, data);
-         suggestState.value = false; // 建议态关闭
-         searchState.value = true; // 搜索态开启
-         searchKeyWords.value = data;
-         searchByWords();
-       }
+      if (data) {
+        mitt.emit(MESSAGE_CONSTANTS.ADD_HISTORY, data);
+        suggestState.value = false; // 建议态关闭
+        searchState.value = true; // 搜索态开启
+        searchKeyWords.value = data;
+        searchByWords();
+      }
+    }
+
+    function chinesePrinterStart() {
+      fetchSuggFlag = false;
+    }
+
+    function chinesePrinterEnd() {
+      fetchSuggFlag = true;
+      updateSuggest();
     }
 
     return {
@@ -126,6 +143,8 @@ export default {
       searchKeyWords,
       searchSongHandler,
       updateSuggest,
+      chinesePrinterStart,
+      chinesePrinterEnd,
       ...toRefs(data),
     };
   },
