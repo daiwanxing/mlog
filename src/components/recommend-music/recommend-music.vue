@@ -64,7 +64,7 @@ import songList from "@/common/song-list/song-list.vue";
 import errorPage from "@/common/error-page/error-page.vue";
 import loadingBar from '@/common/loading/loading.vue';
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
-import { installSwiperModule } from "@/useSetup/useSwiper.js";
+import { installSwiperModule } from "@/useComposition/useSwiper.js";
 import { reactive, toRefs, ref, onActivated, onDeactivated, computed } from "vue";
 import { translatorToMillon } from '@/utils/util';
 
