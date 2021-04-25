@@ -10,9 +10,6 @@ export function translatorToMillon (number) {
     return number.substr(0, number.length - 4) + '.' + number.substr(number.length - 4, 1) + '万';
 }
 
-/**
- * 将数据存入到localStorage 
- */
 export function setStorage (key, value) {
     localStorage.setItem(key, JSON.stringify(value));
 }

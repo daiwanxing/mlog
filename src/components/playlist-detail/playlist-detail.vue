@@ -1,6 +1,6 @@
 <template>
   <main>
-    <template v-if="loading"> </template>
+    <template v-if="loading"></template>
     <section class="playlist-cover-bg" v-else>
       <div class="playlist-cover">
         <div
@@ -26,8 +26,12 @@
       </div>
     </section>
     <section class="playlist-songs">
-      <div class="pl-song-title">歌曲列表</div>
+      <div class="pl-title">歌曲列表</div>
       <song-list :songs="songs" isReference></song-list>
+    </section>
+    <section class="review-comments">
+      <!-- 评论列表区 -->
+        <div class="pl-title">最新评论</div>
     </section>
   </main>
 </template>
@@ -37,11 +41,12 @@
  * 歌单详情组件
  */
 
+import songList from "@/common/song-list/song-list.vue";
 import { ref, onMounted, reactive, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import songList from "@/common/song-list/song-list.vue";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
-import { songListDetailDto } from '@/api/dto/song-list-dto';
+import { fetchPlayListComment } from '@/api/comment';
+import { songListDetailDto } from "@/api/dto/song-list-dto";
 
 export default {
   components: {
@@ -51,23 +56,28 @@ export default {
     const router = useRouter();
     const routes = useRoute();
     const playlist = reactive({
-      info: {},
-      songs: []
+      info: {}, // 歌单信息
+      songs: [], // 歌单歌曲列表
+      commentInfo: {}, // 评论信息
+      dynamicInfo: {} // 动态信息
     });
     const playListId = ref(routes.query.id);
     if (!playListId.value) {
       // 如果不存在歌单id 直接返回到上一级路由
-      return router.back(); 
+      return router.back();
     }
     const loading = ref(true);
     onMounted(function () {
-      fetchSongList(playListId.value)
-        .then((result) => {
-          playlist.info = result.playlist;
-          playlist.songs = songListDetailDto(result.playlist.tracks || []);
+      const id = playListId.value;
+      Promise.all([fetchSongListDynamic(id), fetchSongList(id), fetchPlayListComment(id)])
+        .then(([dynamicInfo, playListInfo, commentInfo]) => {
+            playlist.info = playListInfo.playlist;
+            playlist.songs = songListDetailDto(playListInfo.playlist.tracks || []);
+            commentInfo.value = commentInfo;
+            dynamicInfo.value = dynamicInfo;
         })
-        .finally((error) => {
-          loading.value = false;
+        .finally(() => {
+            loading.value = false;
         });
     });
 
@@ -162,12 +172,15 @@ main {
     }
   }
 
-  .pl-song-title {
+  .pl-title {
     background-color: #eeeff0;
     color: #666;
     line-height: 23px;
     font-size: 12px;
     padding: 0 6px;
+  }
+
+  .review-comments {
   }
 }
 </style>
