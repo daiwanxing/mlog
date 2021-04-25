@@ -4,7 +4,7 @@
         v-for="(item, idx) in songs" 
         :key="idx" 
         :data-ref="idx + 1 < 10 ? '0' + (idx + 1) : idx + 1"
-        :class="['song-item', { toNum: isReference}]"
+        :class="['song-item', { toNum: isReference, highlight: needHiglight}]"
       >
       <router-link class="song-link" :to="`/song/${item.id}`">
         <div class="song-name" :data-alias="item.alias">{{item.name}}&nbsp;</div>
@@ -40,6 +40,7 @@ import { toRef } from "vue";
 export default {
   name: "song-list",  
   props: {
+    // 歌曲列表
     songs: {
       type: Array,
       default() {
@@ -48,6 +49,11 @@ export default {
     },
     // 是否编号
     isReference: {
+      type: Boolean,
+      default: false
+    },
+    // 是否需要高亮前三行
+    needHiglight: {
       type: Boolean,
       default: false
     }
@@ -73,7 +79,7 @@ export default {
     padding-right: 42px;
     position: relative;
 
-    &:nth-child(-n + 3)::before {
+    &.highlight:nth-child(-n + 3)::before {
       color: var(--textTheme);
     }
 

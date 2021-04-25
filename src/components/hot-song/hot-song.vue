@@ -8,7 +8,8 @@
       <loading-page v-if="loading"></loading-page>
       <song-list 
         v-else
-        :isReference="true"
+        isReference
+        needHiglight
         :songs="hotSongList"
         />
     </div>

@@ -21,6 +21,10 @@ const routes = [
         path: '/mlog/playlist',
         name: 'playlist',
         component: playlist
+    },
+    {
+        path: '/song/:id',
+        name: 'play-song'
     }
 ];
 
