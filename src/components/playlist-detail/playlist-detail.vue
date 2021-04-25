@@ -18,18 +18,33 @@
 /***
  * 歌单详情组件
  */
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+
+// 今天的任务，完成歌单详情界面所有元素展示，接口联调
+// 明天任务，用户主页展示
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import songList from "@/common/song-list/song-list.vue";
+import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
 
 export default {
   components: {
     songList,
   },
   setup() {
+    const router = useRouter();
     const routes = useRoute();
     const playListId = ref(routes.query.id); // 取出歌单id， 请求歌单详情信息
-  },
+    if (!playListId.value) {
+        // 如果不存在歌单id 直接返回到上一级路由
+        return router.back();
+    }
+    onMounted(function () {
+        fetchSongList(playListId.value)
+            .then(result => {
+                console.log(result);
+            });
+    });
+  }
 };
 </script>
 

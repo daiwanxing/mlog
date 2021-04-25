@@ -33,16 +33,16 @@
       <section class="song-list-group">
         <h3 class="sub-title">推荐歌单</h3>
         <div class="song-list-box">
-          <a
+          <router-link
               class="song-list"
                v-for="item in songList"
                :key="item.id"
-              :href="'/mlog/playlist?id='+ item.id"
+              :to="'/mlog/playlist?id='+ item.id"
               :data-playcount="translatorToMillon(item.playCount)"
           >
             <img :src="item.picUrl" :alt="item.name" class="song-list-image" />
             <div class="song-list-title">{{ item.name }}</div>
-          </a>
+          </router-link>
         </div>
       </section>
       <!-- 最新音乐 -->

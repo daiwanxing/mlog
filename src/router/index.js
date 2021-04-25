@@ -7,7 +7,7 @@ const playlist = () => import('@/components/playlist-detail/playlist-detail.vue'
 const routes = [
     {
         path: '/',
-        name: 'index',
+        name: 'root',
         redirect () {
             return { name: '/mlog' }
         }
