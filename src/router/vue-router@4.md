@@ -8,7 +8,6 @@ router-link 移除了append 属性，原因是该功能实现很简单而且不�
             所有的导航都是异步的
 
 
-
             get一个知识点，通过link标签，link rel="preload"属性， as="script" href="xx.js" 可以提前预加载一个脚本资源
             这个脚本资源，不会被执行，不会阻塞DOM渲染。会被预先请求到本地，随后如果浏览器发现有script标签的src请求了这个脚本，会直接从本地执行这个
             脚本资源。但是ESM的脚本提前preload好像没有此效果，随后的script标签请求一个type="module"的脚本文件

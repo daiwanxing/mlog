@@ -28,7 +28,7 @@ const HOT_SONG_ID = "2172703289"; // 热歌榜 - 歌单ID
 
 const today = computed(() => {
   let date = new Date();
-  return date.getMonth() + 1 + "月" + date.getDay() + "日";
+  return date.getMonth() + 1 + "月" + date.getDate() + "日";
 });
 
 const hotSongList = ref([]); // 热歌榜

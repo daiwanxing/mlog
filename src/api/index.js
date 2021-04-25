@@ -1,5 +1,4 @@
 import axios from '../utils/axios-utils';
-
 /***
  * 获取轮播图
  */
