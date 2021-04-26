@@ -32,6 +32,7 @@
     <section class="review-comments">
       <!-- 评论列表区 -->
         <div class="pl-title">最新评论</div>
+        <comment-list :comments="commentInfo"></comment-list>
     </section>
   </main>
 </template>
@@ -40,7 +41,7 @@
 /***
  * 歌单详情组件
  */
-
+import commentList from '@/common/comment-list/comment-list.vue';
 import songList from "@/common/song-list/song-list.vue";
 import { ref, onMounted, reactive, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -51,6 +52,7 @@ import { songListDetailDto } from "@/api/dto/song-list-dto";
 export default {
   components: {
     songList,
+    commentList
   },
   setup() {
     const router = useRouter();
@@ -58,7 +60,7 @@ export default {
     const playlist = reactive({
       info: {}, // 歌单信息
       songs: [], // 歌单歌曲列表
-      commentInfo: {}, // 评论信息
+      commentInfo: [], // 评论信息
       dynamicInfo: {} // 动态信息
     });
     const playListId = ref(routes.query.id);
@@ -73,8 +75,8 @@ export default {
         .then(([dynamicInfo, playListInfo, commentInfo]) => {
             playlist.info = playListInfo.playlist;
             playlist.songs = songListDetailDto(playListInfo.playlist.tracks || []);
-            commentInfo.value = commentInfo;
-            dynamicInfo.value = dynamicInfo;
+            playlist.commentInfo = commentInfo.comments;
+            playlist.dynamicInfo = dynamicInfo;
         })
         .finally(() => {
             loading.value = false;
@@ -162,9 +164,10 @@ main {
       }
 
       .playlist-short-desc {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
         margin-top: 4px;
         font-size: 12px;
         color: hsla(0, 0%, 100%, 0.7);
@@ -181,6 +184,7 @@ main {
   }
 
   .review-comments {
+
   }
 }
 </style>
