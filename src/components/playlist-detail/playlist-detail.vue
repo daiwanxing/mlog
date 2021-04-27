@@ -34,9 +34,14 @@
         <div class="pl-title">歌曲列表</div>
         <song-list :songs="songs" isReference></song-list>
       </section>
+      <!--  热评列表    -->
+      <section class="hot-comments" v-if="hotComments.length">
+        <div class="pl-title">精彩评论</div>
+        <comment-list :comments="hotComments"></comment-list>
+      </section>
       <section class="review-comments" v-if="commentInfo.length">
         <!-- 评论列表区 -->
-        <div class="pl-title">最新评论</div>
+        <div class="pl-title">最新评论({{dynamicInfo.commentCount}})</div>
         <comment-list :comments="commentInfo"></comment-list>
       </section>
     </template>
@@ -54,7 +59,7 @@ import loadingBar from "@/common/loading/loading.vue";
 import { ref, onMounted, reactive, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
-import { fetchPlayListComment } from "@/api/comment";
+import { fetchPlayListComment, fetchHotComments } from "@/api/comment";
 import { songListDetailDto } from "@/api/dto/song-list-dto";
 
 export default {
@@ -71,6 +76,7 @@ export default {
       songs: [], // 歌单歌曲列表
       commentInfo: [], // 评论信息
       dynamicInfo: {}, // 动态信息
+      hotComments: []
     });
     const playListId = ref(routes.query.id);
     if (!playListId.value) {
@@ -80,18 +86,19 @@ export default {
     const loading = ref(true);
     onMounted(function () {
       const id = playListId.value;
+      const TYPE_ID = 2;
       Promise.all([
         fetchSongListDynamic(id),
         fetchSongList(id),
         fetchPlayListComment(id),
+        fetchHotComments(id, TYPE_ID)
       ])
-        .then(([dynamicInfo, playListInfo, commentInfo]) => {
+        .then(([dynamicInfo, playListInfo, commentInfo, hotResult]) => {
           playlist.info = playListInfo.playlist;
-          playlist.songs = songListDetailDto(
-            playListInfo.playlist.tracks || []
-          );
+          playlist.songs = songListDetailDto(playListInfo.playlist.tracks || []);
           playlist.commentInfo = commentInfo.comments;
           playlist.dynamicInfo = dynamicInfo;
+          playlist.hotComments = hotResult.hotComments;
         })
         .finally(() => {
           loading.value = false;
@@ -202,9 +209,6 @@ main {
     line-height: 23px;
     font-size: 12px;
     padding: 0 6px;
-  }
-
-  .review-comments {
   }
 }
 </style>
