@@ -30,7 +30,10 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(), // 新的history方法取代了原来的mode属性
-    routes
+    routes,
+    scrollBehavior () {
+        return { top: 0}
+    }
 });
 
 export default router;

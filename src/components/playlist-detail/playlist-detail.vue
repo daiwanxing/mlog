@@ -1,58 +1,67 @@
 <template>
   <main>
-    <template v-if="loading"></template>
-    <section class="playlist-cover-bg" v-else>
-      <div class="playlist-cover">
-        <div
-          class="cover-bg-blur"
-          :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
-        ></div>
-        <img :src="info.coverImgUrl" :alt="info.name" />
+    <template v-if="loading">
+      <div class="loading-wrap">
+        <loading-bar></loading-bar>
       </div>
-      <div class="playlist-desc">
-        <h2>{{ info.name }}</h2>
-        <div class="playlist-author">
-          <!-- 要改成router-link 标签 -->
-          <router-link to="/mlog" class="author-link">
-            <img
-              :src="info.creator.avatarUrl"
-              :alt="info.creator.nickname"
-              class="author-avatar"
-            />
-            <span class="author-name">{{ info.creator.nickname }}</span>
-          </router-link>
+    </template>
+    <template v-else>
+      <section class="playlist-cover-bg">
+        <div class="playlist-cover">
+          <div
+            class="cover-bg-blur"
+            :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
+          ></div>
+          <img :src="info.coverImgUrl" :alt="info.name" />
         </div>
-        <div class="playlist-short-desc">{{ info.description }}</div>
-      </div>
-    </section>
-    <section class="playlist-songs">
-      <div class="pl-title">歌曲列表</div>
-      <song-list :songs="songs" isReference></song-list>
-    </section>
-    <section class="review-comments">
-      <!-- 评论列表区 -->
+        <div class="playlist-desc">
+          <h2>{{ info.name }}</h2>
+          <div class="playlist-author">
+            <!-- 要改成router-link 标签 -->
+            <router-link to="/mlog" class="author-link">
+              <img
+                :src="info.creator.avatarUrl"
+                :alt="info.creator.nickname"
+                class="author-avatar"
+              />
+              <span class="author-name">{{ info.creator.nickname }}</span>
+            </router-link>
+          </div>
+          <div class="playlist-short-desc">{{ info.description }}</div>
+        </div>
+      </section>
+      <section class="playlist-songs">
+        <div class="pl-title">歌曲列表</div>
+        <song-list :songs="songs" isReference></song-list>
+      </section>
+      <section class="review-comments" v-if="commentInfo.length">
+        <!-- 评论列表区 -->
         <div class="pl-title">最新评论</div>
         <comment-list :comments="commentInfo"></comment-list>
-    </section>
+      </section>
+    </template>
   </main>
 </template>
 
 <script>
 /***
  * 歌单详情组件
+ * 点赞位置优化，查看播放详情页面优化
  */
-import commentList from '@/common/comment-list/comment-list.vue';
+import commentList from "@/common/comment-list/comment-list.vue";
 import songList from "@/common/song-list/song-list.vue";
+import loadingBar from "@/common/loading/loading.vue";
 import { ref, onMounted, reactive, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
-import { fetchPlayListComment } from '@/api/comment';
+import { fetchPlayListComment } from "@/api/comment";
 import { songListDetailDto } from "@/api/dto/song-list-dto";
 
 export default {
   components: {
     songList,
-    commentList
+    commentList,
+    loadingBar,
   },
   setup() {
     const router = useRouter();
@@ -61,7 +70,7 @@ export default {
       info: {}, // 歌单信息
       songs: [], // 歌单歌曲列表
       commentInfo: [], // 评论信息
-      dynamicInfo: {} // 动态信息
+      dynamicInfo: {}, // 动态信息
     });
     const playListId = ref(routes.query.id);
     if (!playListId.value) {
@@ -71,15 +80,21 @@ export default {
     const loading = ref(true);
     onMounted(function () {
       const id = playListId.value;
-      Promise.all([fetchSongListDynamic(id), fetchSongList(id), fetchPlayListComment(id)])
+      Promise.all([
+        fetchSongListDynamic(id),
+        fetchSongList(id),
+        fetchPlayListComment(id),
+      ])
         .then(([dynamicInfo, playListInfo, commentInfo]) => {
-            playlist.info = playListInfo.playlist;
-            playlist.songs = songListDetailDto(playListInfo.playlist.tracks || []);
-            playlist.commentInfo = commentInfo.comments;
-            playlist.dynamicInfo = dynamicInfo;
+          playlist.info = playListInfo.playlist;
+          playlist.songs = songListDetailDto(
+            playListInfo.playlist.tracks || []
+          );
+          playlist.commentInfo = commentInfo.comments;
+          playlist.dynamicInfo = dynamicInfo;
         })
         .finally(() => {
-            loading.value = false;
+          loading.value = false;
         });
     });
 
@@ -93,6 +108,12 @@ export default {
 
 <style scoped lang="scss">
 main {
+
+  .loading-wrap {
+    height: 100vh;
+    padding-top: 100px;
+  }
+
   .playlist-cover-bg {
     display: flex;
     position: relative;
@@ -184,7 +205,6 @@ main {
   }
 
   .review-comments {
-
   }
 }
 </style>

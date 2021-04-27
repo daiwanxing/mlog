@@ -25,7 +25,7 @@ import { songListDetailDto } from '@/api/dto/song-list-dto';
 import { computed, ref, onActivated } from "vue";
 import { fetchSongList } from "@/api/song-list.js";
 
-const HOT_SONG_ID = "2172703289"; // 热歌榜 - 歌单ID
+const HOT_SONG_ID = "3778678"; // 热歌榜 - 歌单ID
 
 const today = computed(() => {
   let date = new Date();

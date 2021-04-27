@@ -146,6 +146,12 @@ export default {
             transform: scale(0.7);
         }
     }
+
+    .author-list {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
 </style>
