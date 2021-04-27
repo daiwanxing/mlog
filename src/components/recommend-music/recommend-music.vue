@@ -10,6 +10,7 @@
           v-if="bannerList.length && swiperVisible"
           loop
           autoplay
+          :lazy="{loadPrevNext: true}"
           :space-between="10"
           :disableOnInteraction="false"
           :initialSlide="swiperIndex"
@@ -18,9 +19,10 @@
             bulletActiveClass: 'net-bullet-active',
             bulletClass: 'net-bullet',
           }"
+          class="custom-swiper-box"
           @slideChange="swiperHandler"
         >
-          <swiper-slide v-for="(item, index) in bannerList" :key="index">
+          <swiper-slide v-for="(item, index) in bannerList" :key="index" class="custom-swiper-slide">
             <img
               :src="item.imageUrl"
               :alt="item.typeTitle"
@@ -144,6 +146,10 @@ export default {
 .swiper-box {
   padding: 10px;
   box-sizing: border-box;
+
+  .custom-swiper-box {
+    height: calc((100vw - 20px) * 0.37037);
+  }
 
   .swiper-image {
     width: 100%;
