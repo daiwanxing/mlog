@@ -7,6 +7,7 @@
  * 例如： [笑哭] -> 请求一张网易云的笑哭标签
  */
 
+import { h } from "vue"
 
 const EMOJI_LIST = {
     "[笑哭]": "https://s1.music.126.net/style/web2/emoji/emoji_86@2x.png",
@@ -45,15 +46,29 @@ const EMOJI_LIST = {
     "[弱]": "https://s1.music.126.net/style/web2/emoji/emoji_372@2x.png"
 };
 
+
+const IMAGE_REG = /<img.*?(?:>|\/>)/gi;
+const EMOJI_REG = /\[.*?\]+/g;
+
 /***
- * 匹配以[开头]结尾的内容
+ * 匹配以[表情]结尾的内容
  * @param text 文本
  */
-function matchedEmoji (text) {
-    const REG_EXP = /\[.*?\]/g;
-
-    text.replaceAll(REG_EXP, function (matchedVal) {
-        return "<img src=" + EMOJI_LIST[matchedVal] + " alt='matchedVal;/>";
-        // TODO： 用render函数写
+function replaceContent (text) {
+    let rawText = text;
+    // 替换所有符合emoji标签为img标签
+    rawText.replaceAll(EMOJI_REG, item => {
+        if (EMOJI_LIST[item]) {
+            return `<img src="${EMOJI_LIST[item]}" />`;
+        } else {
+            return item;
+        }
     });
+
+    let rawList = rawText.split(IMAGE_REG); // 以img正则作为分割点
+    rawList.forEach(item => {
+        rawText = rawText.replace(item, `<span>${item}</span>`); //将普通文本用span标签包裹
+    });
+
+    return rawText;
 }
