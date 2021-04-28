@@ -1,27 +1,32 @@
 <template>
-  <div class="comment-box">
-    <span class="comment-text"></span>
-    <img src="" alt="" class="comment-emoji">
-  </div>
+  <div class="comment-box" v-html="htmlFra"></div>
 </template>
 
 <script>
-import { h } from "vue";
+import replaceContent from "@/utils/emoji-util";
+import { ref } from "vue";
+
 export default  {
   name: "comment-content",
   props: {
     text: String // 文本
   },
   setup (props) {
-    const createEmoji = function () {
-      h ()
-    }
-    return () => {
-      h("div", {
-        class: "comment-box"
-      }, [])
+    let { text } = props;
+    let htmlFra = ref(replaceContent(text));
+
+    return {
+      htmlFra
     }
   }
 }
-// 这个组件的目的， 1. 渲染文本， 2. 将文本中的一些[表情]替换成img标签并请求表情对应的图片
 </script>
+
+<style lang="scss">
+.comment-box {
+  .comment-emoji {
+    width: 21px;
+    vertical-align: bottom;
+  }
+}
+</style>

@@ -29,7 +29,7 @@
                       <span>@{{item.beReplied[0].user.nickname}}：{{item.beReplied[0].content}}</span>
                     </div>
                   </template>
-                  <span v-else>{{item.content}}</span>
+                  <comment-content :text="item.content" v-else />
                 </div>
             </div>
         </li>
@@ -39,8 +39,12 @@
 <script>
 // 评论列表组件
 import dayjs from '@/utils/dayjs-util';
+import commentContent from '@/common/comment-content/comment-content.vue';
 
 export default {
+    components: {
+       commentContent
+    },
     props: {
         comments: {
             type: Array,

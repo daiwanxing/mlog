@@ -54,12 +54,12 @@ const EMOJI_REG = /\[.*?\]+/g;
  * 匹配以[表情]结尾的内容
  * @param text 文本
  */
-function replaceContent (text) {
+export default function replaceContent (text) {
     let rawText = text;
     // 替换所有符合emoji标签为img标签
-    rawText.replaceAll(EMOJI_REG, item => {
+    rawText = rawText.replaceAll(EMOJI_REG, item => {
         if (EMOJI_LIST[item]) {
-            return `<img src="${EMOJI_LIST[item]}" />`;
+            return `<img src="${EMOJI_LIST[item]}" class="comment-emoji" />`;
         } else {
             return item;
         }
@@ -67,8 +67,11 @@ function replaceContent (text) {
 
     let rawList = rawText.split(IMAGE_REG); // 以img正则作为分割点
     rawList.forEach(item => {
-        rawText = rawText.replace(item, `<span>${item}</span>`); //将普通文本用span标签包裹
+        if (item) {
+            rawText = rawText.replace(item, `<span class="comment-text">${item}</span>`); //将普通文本用span标签包裹
+        }
     });
 
+    console.log(rawText);
     return rawText;
 }
