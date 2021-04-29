@@ -64,14 +64,11 @@ export default function replaceContent (text) {
             return item;
         }
     });
-
     let rawList = rawText.split(IMAGE_REG); // 以img正则作为分割点
     rawList.forEach(item => {
         if (item) {
             rawText = rawText.replace(item, `<span class="comment-text">${item}</span>`); //将普通文本用span标签包裹
         }
     });
-
-    console.log(rawText);
     return rawText;
 }
