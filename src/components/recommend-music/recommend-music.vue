@@ -10,7 +10,7 @@
           v-if="bannerList.length && swiperVisible"
           loop
           autoplay
-          :lazy="{loadPrevNext: true}"
+          :lazy="{ loadPrevNext: true }"
           :space-between="10"
           :disableOnInteraction="false"
           :initialSlide="swiperIndex"
@@ -22,7 +22,11 @@
           class="custom-swiper-box"
           @slideChange="swiperHandler"
         >
-          <swiper-slide v-for="(item, index) in bannerList" :key="index" class="custom-swiper-slide">
+          <swiper-slide
+            v-for="(item, index) in bannerList"
+            :key="index"
+            class="custom-swiper-slide"
+          >
             <img
               :src="item.imageUrl"
               :alt="item.typeTitle"
@@ -36,14 +40,16 @@
         <h3 class="sub-title">推荐歌单</h3>
         <div class="song-list-box">
           <router-link
-              class="song-list"
-               v-for="item in songList"
-               :key="item.id"
-              :to="'/mlog/playlist?id='+ item.id"
-              :data-playcount="translatorToMillon(item.playCount)"
+            class="song-list"
+            v-for="item in songList"
+            :key="item.id"
+            :to="'/mlog/playlist?id=' + item.id"
           >
-            <img :src="item.picUrl" :alt="item.name" class="song-list-image" />
-            <div class="song-list-title">{{ item.name }}</div>
+            <albumCover
+              :coverUrl="item.picUrl"
+              :count="item.playCount"
+              >{{ item.name }}
+            </albumCover>
           </router-link>
         </div>
       </section>
@@ -62,24 +68,31 @@
 </template>
 
 <script>
+import albumCover from "@/common/album-cover/album-cover.vue";
 import songList from "@/common/song-list/song-list.vue";
 import errorPage from "@/common/error-page/error-page.vue";
-import loadingBar from '@/common/loading/loading.vue';
+import loadingBar from "@/common/loading/loading.vue";
 import { fetchBanner, fetchSongList, fetchNewMusic } from "@/api/index";
 import { installSwiperModule } from "@/useComposition/useSwiper.js";
-import { reactive, toRefs, ref, onActivated, onDeactivated, computed } from "vue";
-import { translatorToMillon } from '@/utils/util';
+import {
+  reactive,
+  toRefs,
+  ref,
+  onActivated,
+  onDeactivated,
+  computed,
+} from "vue";
 
 // TODO 2. 完善推荐音乐底部 footer 样式，歌单播放数量展示, 歌单容器用a标签展示
-// 4/21 4. 开发热歌榜
 
 export default {
   name: "recommend-music",
   components: {
+    albumCover,
     songList,
     ...installSwiperModule(),
     errorPage,
-    loadingBar
+    loadingBar,
   },
   setup() {
     const requestError = ref(false);
@@ -108,10 +121,9 @@ export default {
 
     getMusicList();
     function getMusicList() {
-      fetchNewMusic()
-        .then(({ result: newMusic = [] }) => {
-          data.newMusic = newMusic;
-        });
+      fetchNewMusic().then(({ result: newMusic = [] }) => {
+        data.newMusic = newMusic;
+      });
     }
 
     // 每次滑动，记录当前的轮播图的索引，当组件激活时，快速定位到上次轮播的位置
@@ -126,7 +138,7 @@ export default {
       swiperVisible.value = true;
     });
 
-    const newMusicList = computed(() => data.newMusic.map(item => item.song));
+    const newMusicList = computed(() => data.newMusic.map((item) => item.song));
 
     return {
       newMusicList,
@@ -135,8 +147,7 @@ export default {
       swiperHandler,
       swiperIndex,
       getMusicList,
-      ...toRefs(data),
-      translatorToMillon
+      ...toRefs(data)
     };
   },
 };
@@ -200,36 +211,6 @@ export default {
     width: 33%;
     box-sizing: border-box;
     margin-bottom: 14px;
-    position: relative;
-
-      &::after {
-        content: attr(data-playcount);
-        position: absolute;
-        right: 0px;
-        top: 0px;
-        height: 18px;
-        line-height: 18px;
-        padding-left: 14px;
-        color: #fff;
-        font-size: 10px;
-        background: var(--icon-earphone) no-repeat;
-        background-size: 10px;
-        background-position-y: 4px;
-      }
-
-    .song-list-image {
-      width: 100%;
-    }
-
-    .song-list-title {
-      display: -webkit-box;
-      overflow: hidden;
-      color: #333;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      text-overflow: ellipsis;
-      font-size: 13px;
-    }
   }
 }
 </style>

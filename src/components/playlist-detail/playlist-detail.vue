@@ -12,12 +12,11 @@
             class="cover-bg-blur"
             :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
           ></div>
-          <img :src="info.coverImgUrl" :alt="info.name" />
+          <albumCover :count="info.playCount" :coverUrl="info.coverImgUrl"></albumCover>
         </div>
         <div class="playlist-desc">
           <h2>{{ info.name }}</h2>
           <div class="playlist-author">
-            <!-- 要改成router-link 标签 -->
             <router-link to="/mlog" class="author-link">
               <img
                 :src="info.creator.avatarUrl"
@@ -53,6 +52,7 @@
  * 歌单详情组件
  * 点赞位置优化，查看播放详情页面优化
  */
+import albumCover from "@/common/album-cover/album-cover.vue";
 import commentList from "@/common/comment-list/comment-list.vue";
 import songList from "@/common/song-list/song-list.vue";
 import loadingBar from "@/common/loading/loading.vue";
@@ -67,6 +67,7 @@ export default {
     songList,
     commentList,
     loadingBar,
+    albumCover
   },
   setup() {
     const router = useRouter();
@@ -149,12 +150,6 @@ main {
       width: 126px;
       height: 126px;
       flex-shrink: 0;
-
-      img {
-        width: 100%;
-        object-fit: cover;
-        background: #ccc;
-      }
     }
 
     .playlist-desc {
