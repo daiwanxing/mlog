@@ -6,7 +6,7 @@
         :data-ref="idx + 1 < 10 ? '0' + (idx + 1) : idx + 1"
         :class="['song-item', { toNum: isReference, highlight: needHiglight}]"
       >
-      <router-link class="song-link" :to="`/song/${item.id}`">
+      <router-link class="song-link" :to="`/mlog/song/${item.id}`">
         <div class="song-name" :data-alias="item.alias">{{item.name}}&nbsp;</div>
         <div class="song-author-info">
             <!-- SQ 独家 VIP -->

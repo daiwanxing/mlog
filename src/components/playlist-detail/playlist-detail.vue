@@ -12,7 +12,11 @@
             class="cover-bg-blur"
             :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
           ></div>
-          <albumCover :count="info.playCount" :coverUrl="info.coverImgUrl"></albumCover>
+          <albumCover 
+              :count="info.playCount" 
+              :coverUrl="info.coverImgUrl"
+              @click="openDetailPage"
+          ></albumCover>
         </div>
         <div class="playlist-desc">
           <h2>{{ info.name }}</h2>
@@ -44,6 +48,16 @@
         <comment-list :comments="commentInfo"></comment-list>
       </section>
     </template>
+    <transition enter-active-class="animate__slideInUp animate__faster"
+                leave-active-class="animate__slideOutDown animate__faster"
+    >
+      <div class="cover-detail animate__animated" 
+            v-if="coverDetailVisible"
+            :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
+      >
+
+      </div>
+    </transition>
   </main>
 </template>
 
@@ -70,6 +84,7 @@ export default {
     albumCover
   },
   setup() {
+    let coverDetailVisible = ref(false);
     const router = useRouter();
     const routes = useRoute();
     const playlist = reactive({
@@ -79,6 +94,7 @@ export default {
       dynamicInfo: {}, // 动态信息
       hotComments: []
     });
+
     const playListId = ref(routes.query.id);
     if (!playListId.value) {
       // 如果不存在歌单id 直接返回到上一级路由
@@ -106,8 +122,14 @@ export default {
         });
     });
 
+    function openDetailPage () {
+      coverDetailVisible.value = true;
+    }
+
     return {
       loading,
+      coverDetailVisible,
+      openDetailPage,
       ...toRefs(playlist),
     };
   },
@@ -116,6 +138,7 @@ export default {
 
 <style scoped lang="scss">
 main {
+  position: relative;
 
   .loading-wrap {
     height: 100vh;
@@ -204,6 +227,19 @@ main {
     line-height: 23px;
     font-size: 12px;
     padding: 0 6px;
+  }
+
+  .cover-detail {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(20px);
+    transform: scale(3);
   }
 }
 </style>

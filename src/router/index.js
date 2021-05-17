@@ -3,6 +3,7 @@ import { defineAsyncComponent } from 'vue';
 
 const index = () => import('@/components/index/index.vue');
 const playlist = () => import('@/components/playlist-detail/playlist-detail.vue');
+const playAudioPage = () => import('@/common/play-page/play-page.vue');
 
 const routes = [
     {
@@ -23,8 +24,9 @@ const routes = [
         component: playlist
     },
     {
-        path: '/song/:id',
-        name: 'play-song'
+        path: '/mlog/song/:id',
+        name: 'play-song',
+        component: playAudioPage
     }
 ];
 
