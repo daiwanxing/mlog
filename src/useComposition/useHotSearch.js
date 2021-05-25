@@ -1,13 +1,23 @@
 import { fetchHotSearch } from "@/api/index";
 import mitt, { MESSAGE_CONSTANTS } from "@/utils/mitt";
+import { ref } from "vue";
 
-export async function fetchHotList (storage) {
-    try {
-        let data = await fetchHotSearch() || [];
-        storage.value = data.result;
-    } catch (e) {
-        console.error(e);
-    }
+export function fetchHotList () {
+    const loading = ref(true);
+    const hotList = ref([]);
+    fetchHotSearch().then(({ result }) => {
+        hotList.value = result;
+    }).catch(error => {
+        console.error(error);
+        hotList.value = [];
+    }).finally(() => {
+        loading.value = false;
+    });
+
+    return {
+        loading,
+        hotList
+    };
 }
 
 export function hotSelectHandler (data, vmEmit) {

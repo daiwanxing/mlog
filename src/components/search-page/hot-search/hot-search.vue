@@ -2,28 +2,36 @@
   <div class="hot-search-box">
     <!-- 热门搜索 -->
     <span class="hot-search-title">热门搜索</span>
-    <div
-      class="hot-search-chip"
-      v-for="(item, index) in hotList.hots"
-      :key="index"
-      @click="hotSelectHandler(item.first, $emit)"
-    >
-      {{ item.first }}
-    </div>
+    <template v-if="loading">
+      <loading></loading>
+    </template>
+    <template v-else>
+      <div
+        class="hot-search-chip"
+        v-for="(item, index) in hotList.hots"
+        :key="index"
+        @click="hotSelectHandler(item.first, $emit)"
+      >
+        {{ item.first }}
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
+import loading from "@/common/loading/loading.vue";
 import { fetchHotList, hotSelectHandler } from "@/useComposition/useHotSearch";
-import { ref } from "vue";
 
 export default {
+  components: {
+    loading
+  },
   setup() {
-    const hotList = ref([]); // 热搜列表
-    fetchHotList(hotList);
+    const { loading, hotList } = fetchHotList()
 
     return {
       hotList,
+      loading,
       hotSelectHandler
     };
   },

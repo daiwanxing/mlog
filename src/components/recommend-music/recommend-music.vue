@@ -83,7 +83,6 @@ import {
   computed,
 } from "vue";
 
-// TODO 2. 完善推荐音乐底部 footer 样式，歌单播放数量展示, 歌单容器用a标签展示
 
 export default {
   name: "recommend-music",
