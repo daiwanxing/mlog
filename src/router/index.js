@@ -10,11 +10,11 @@ const routes = [
         path: '/',
         name: 'root',
         redirect () {
-            return { name: '/mlog' }
+            return { name: '/mlog/' }
         }
     },
     {
-        path: '/mlog',
+        path: '/mlog/',
         name: 'mlog',
         component: index
     },

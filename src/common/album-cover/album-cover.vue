@@ -15,8 +15,9 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { translatorToMillon } from "@/utils/util";
+import { debounce } from "lodash-es";
 
 export default {
   props: {
@@ -27,8 +28,21 @@ export default {
     }, // 播放次数
   },
   setup() {
+    // 监听resize事件，每200毫秒
     let isLoaded = ref(false); // 图片是否已经加载完毕
-    let imageWidth = window.innerWidth * 0.33; // 每张图片的宽度,对应的高度也是如此
+    let imageWidth = ref(window.innerWidth * 0.33); // 每张图片的宽度,对应的高度也是如此
+
+    let debounceResizeImageHandler = debounce(function () {
+        imageWidth.value = window.innerWidth * 0.33;
+    }, 200);
+
+    window.addEventListener("resize",  debounceResizeImageHandler);
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("resize", debounceResizeImageHandler);
+    });
+
+
 
     return {
       translatorToMillon,
