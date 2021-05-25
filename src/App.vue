@@ -1,5 +1,7 @@
 <template>
-  <router-view></router-view>
+  <div class="mobile-container">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
@@ -28,5 +30,10 @@ a {
 
 ul {
   list-style: none;
+}
+
+.mobile-container {
+  max-width: 1024px;
+  margin: auto;
 }
 </style>

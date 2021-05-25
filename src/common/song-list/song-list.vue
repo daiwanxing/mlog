@@ -83,7 +83,7 @@ export default {
       color: var(--textTheme);
     }
 
-    &::before {
+    &.toNum::before {
       content: attr(data-ref);
       position: absolute;
       left: -40px;

@@ -30,10 +30,12 @@ export default {
   setup() {
     // 监听resize事件，每200毫秒
     let isLoaded = ref(false); // 图片是否已经加载完毕
-    let imageWidth = ref(window.innerWidth * 0.33); // 每张图片的宽度,对应的高度也是如此
+    let realWidth = window.innerWidth > 1024 ? 1024 : window.innerWidth;
+    let imageWidth = ref(realWidth * 0.33); // 每张图片的宽度,对应的高度也是如此
 
     let debounceResizeImageHandler = debounce(function () {
-        imageWidth.value = window.innerWidth * 0.33;
+        realWidth = window.innerWidth > 1024 ? 1024 : window.innerWidth;
+        imageWidth.value = realWidth * 0.33;
     }, 200);
 
     window.addEventListener("resize",  debounceResizeImageHandler);

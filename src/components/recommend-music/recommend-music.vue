@@ -158,10 +158,6 @@ export default {
   padding: 10px;
   box-sizing: border-box;
 
-  .custom-swiper-box {
-    height: calc((100vw - 20px) * 0.37037);
-  }
-
   .swiper-image {
     width: 100%;
     object-fit: cover;

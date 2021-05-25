@@ -303,6 +303,7 @@ main {
       height: 100%;
       color: inherit;
       font-size: 14px;
+      cursor: pointer;
     }
   }
 }

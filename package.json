@@ -15,7 +15,8 @@
     "sass": "^1.32.8",
     "swiper": "^6.5.6",
     "vue": "^3.0.5",
-    "vue-router": "^4.0.6"
+    "vue-router": "^4.0.6",
+    "webuploader": "^0.1.8"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.1",
