@@ -10,7 +10,7 @@
         />
       </div>
       <div class="login-password-input">
-        <input type="password" placeholder="请输入密码" v-model.trim="pwd" />
+        <input type="password" placeholder="请输入密码" v-model.trim="pwd" @keypress.enter="checkValidHandler" />
       </div>
       <div class="auto-login-box">
         <div class="al-box-wrap">
@@ -23,10 +23,11 @@
           <label for="login-auto" class="at-login">自动登录</label>
         </div>
         <a href="#" class="fgt-pwd">忘记密码</a>
+        <p class="error-tips" v-if="!isValid">{{ errorText }}</p>
       </div>
-      <button type="button" @click="loginHandler">登录</button>
-      <p style="text-align: left; font-size: 14px">
-          <a href="#" style="color: #666" @click="redirectHome">&lt;&nbsp;返回首页</a>
+      <button type="button" @click="checkValidHandler">登录</button>
+      <p class="back-home">
+        <a href="#" @click="redirectHome">&lt;&nbsp;返回首页</a>
       </p>
     </form>
   </main>
@@ -35,12 +36,39 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { login, loginStatus } from "@/api/user";
+import { login } from "@/api/user";
 
-const isAutoLogin = ref(false);
+const errorText = ref("");
+const isValid = ref(true);
+const isAutoLogin = ref(true); // 默认勾选”自动登录“
 const phone = ref("");
 const pwd = ref("");
 const router = useRouter();
+
+async function checkValidHandler() {
+  try {
+    await phoneVailidPromise();
+    isValid.value = true;
+    errorText.value = "";
+  } catch (e) {
+    errorText.value = e;
+    isValid.value = false;
+  } finally {
+    // loginHandler();
+  }
+}
+
+function phoneVailidPromise() {
+  const PHONE_REG = /^1[3456789]\d{9}$/g;
+  return new Promise((resovle, reject) => {
+    let val = phone.value.toString();
+    if (PHONE_REG.test(val)) {
+      resovle();
+    } else {
+      reject("请输入正确的手机号");
+    }
+  });
+}
 
 function loginHandler() {
   login(phone.value, pwd.value).then((res) => {
@@ -48,17 +76,14 @@ function loginHandler() {
   });
 }
 
-function redirectHome () {
-    router.push("/mlog/");
+function redirectHome() {
+  router.push("/mlog/");
 }
 
 // 有效性验证
 function validCheck(e) {
-  let val = e.target.value;
-  if (val && isNaN(val)) {
-    phone.value = "";
-  }
-  phone.value = val;
+  let val = parseInt(e.target.value);
+  phone.value = isNaN(val) ? "" : val;
 }
 </script>
 
@@ -77,16 +102,16 @@ function validCheck(e) {
     text-align: center;
   }
 
-  .login-phone-input,
-  .login-password-input {
+  .login-phone-input {
     margin-bottom: 16px;
   }
 
   .auto-login-box {
     display: flex;
+    position: relative;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 0;
+    padding: 16px 0 20px 0;
   }
 
   .al-box-wrap {
@@ -130,6 +155,7 @@ function validCheck(e) {
     border-radius: 3px;
     border: none;
     background-image: linear-gradient(to right bottom, #4c8aee, #1e66c1);
+    cursor: pointer;
 
     &:hover,
     &:active {
@@ -140,6 +166,30 @@ function validCheck(e) {
       outline: none;
       box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgb(0 102 255 / 30%);
     }
+  }
+
+  .back-home {
+    text-align: left;
+    font-size: 14px;
+    color: #666;
+    a {
+      color: inherit;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .error-tips {
+      position: absolute;
+      bottom: 10px;
+      margin: 0;
+      padding-left: 30px;
+      background: url("https://s2.music.126.net/style/web2/img/icon.png?998bae92fba6618116750ad8d5a09f61") no-repeat 0 9999px;
+      background-position: -44px -270px;
+      font-size: 12px;
+      color: var(--textTheme);
   }
 }
 </style>
