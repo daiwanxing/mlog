@@ -3,14 +3,19 @@
     <form class="login-form" name="login-form">
       <div class="login-phone-input">
         <input
-          type="text"
+          type="number"
           placeholder="请输入手机号"
           v-model.trim="phone"
-          @input="validCheck"
+          @input="inputValidCheck"
         />
       </div>
       <div class="login-password-input">
-        <input type="password" placeholder="请输入密码" v-model.trim="pwd" @keypress.enter="checkValidHandler" />
+        <input
+          type="password"
+          placeholder="请输入密码"
+          v-model.trim="pwd"
+          @keypress.enter="checkValidHandler"
+        />
       </div>
       <div class="auto-login-box">
         <div class="al-box-wrap">
@@ -25,7 +30,9 @@
         <a href="#" class="fgt-pwd">忘记密码</a>
         <p class="error-tips" v-if="!isValid">{{ errorText }}</p>
       </div>
-      <button type="button" @click="checkValidHandler">登录</button>
+      <button type="button" @click="checkValidHandler" :disabled="btnDisabled" :class="{'dis-btn': btnDisabled}">
+        登录
+      </button>
       <p class="back-home">
         <a href="#" @click="redirectHome">&lt;&nbsp;返回首页</a>
       </p>
@@ -43,10 +50,11 @@ const isValid = ref(true);
 const isAutoLogin = ref(true); // 默认勾选”自动登录“
 const phone = ref("");
 const pwd = ref("");
-const router = useRouter();
+const btnDisabled = ref(false);
 
 async function checkValidHandler() {
   try {
+    btnDisabled.value = true;
     await phoneVailidPromise();
     isValid.value = true;
     errorText.value = "";
@@ -54,7 +62,8 @@ async function checkValidHandler() {
     errorText.value = e;
     isValid.value = false;
   } finally {
-    // loginHandler();
+    loginHandler();
+    btnDisabled.value = false;
   }
 }
 
@@ -76,14 +85,14 @@ function loginHandler() {
   });
 }
 
-function redirectHome() {
-  router.push("/mlog/");
-}
-
-// 有效性验证
-function validCheck(e) {
+function inputValidCheck(e) {
   let val = parseInt(e.target.value);
   phone.value = isNaN(val) ? "" : val;
+}
+
+const router = useRouter();
+function redirectHome() {
+  router.push("/mlog/");
 }
 </script>
 
@@ -157,8 +166,11 @@ function validCheck(e) {
     background-image: linear-gradient(to right bottom, #4c8aee, #1e66c1);
     cursor: pointer;
 
-    &:hover,
-    &:active {
+    &.dis-btn {
+        opacity: .5;
+    }
+
+    &:hover {
       opacity: 0.9;
     }
 
@@ -182,14 +194,15 @@ function validCheck(e) {
   }
 
   .error-tips {
-      position: absolute;
-      bottom: 10px;
-      margin: 0;
-      padding-left: 30px;
-      background: url("https://s2.music.126.net/style/web2/img/icon.png?998bae92fba6618116750ad8d5a09f61") no-repeat 0 9999px;
-      background-position: -44px -270px;
-      font-size: 12px;
-      color: var(--textTheme);
+    position: absolute;
+    bottom: 10px;
+    margin: 0;
+    padding-left: 30px;
+    background: url("https://s2.music.126.net/style/web2/img/icon.png?998bae92fba6618116750ad8d5a09f61")
+      no-repeat 0 9999px;
+    background-position: -44px -270px;
+    font-size: 12px;
+    color: var(--textTheme);
   }
 }
 </style>
