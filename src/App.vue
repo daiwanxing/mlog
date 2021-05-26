@@ -5,16 +5,9 @@
 </template>
 
 <script>
-  import { login, loginStatus } from "@/api/user.js";
-
-  export default {
-    name: "netMusic-App",
-    setup () {
-      loginStatus().then(res => {
-        console.log(res);
-      })
-    }
-  }
+export default {
+  name: "netMusic-App"
+};
 </script>
 
 <style>

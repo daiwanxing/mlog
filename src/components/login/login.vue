@@ -12,6 +12,7 @@
       <div class="login-password-input">
         <input
           type="password"
+          autocomplete
           placeholder="请输入密码"
           v-model.trim="pwd"
           @keypress.enter="checkValidHandler"
@@ -82,6 +83,7 @@ function phoneVailidPromise() {
 function loginHandler() {
   login(phone.value, pwd.value).then((res) => {
     console.log(res);
+    redirectHome();
   });
 }
 
