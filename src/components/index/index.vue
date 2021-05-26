@@ -110,7 +110,7 @@
         </svg>
       </div>
       <div class="actions-btn">
-        <button class="download-btn" @click="downloadClient">下载APP</button>
+        <button class="download-btn" @click="loginHandler">登录</button>
       </div>
     </header>
     <nav class="music-nav">
@@ -142,6 +142,7 @@ import hotSong from "../hot-song/hot-song.vue";
 import searchPage from "../search-page/search-page.vue";
 import { debounce } from "lodash-es";
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "index",
@@ -151,6 +152,9 @@ export default {
     searchPage,
   },
   setup() {
+
+    const router = useRouter();
+  
     const compoenntId = ref("recommend-music"); // TODO 部署的时候改为recommend-music
     const staticNavList = [
       {
@@ -176,9 +180,11 @@ export default {
       },
     });
 
-    // 下载网易云音乐客户端
-    const downloadClient = function () {
-      window.open("https://music.163.com/api/android/download/latest2");
+    // 打开登录页面
+    const loginHandler = function () {
+        router.push({
+          name: "login"
+        });
     };
 
     const itemRefs = []; // 顶部 tab的refs
@@ -215,13 +221,13 @@ export default {
 
     return {
       compoenntId,
-      downloadClient,
+      loginHandler,
       staticNavList,
       defaultActive,
       setItemRef,
       emberRef,
     };
-  },
+  }
 };
 </script>
 

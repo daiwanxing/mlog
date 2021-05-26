@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { defineAsyncComponent } from 'vue';
 
 const index = () => import('@/components/index/index.vue');
 const playlist = () => import('@/components/playlist-detail/playlist-detail.vue');
 const playAudioPage = () => import('@/common/play-page/play-page.vue');
+const loginPage = () => import('@/components/login/login.vue');
 
 const routes = [
     {
@@ -27,6 +27,11 @@ const routes = [
         path: '/mlog/song/:id',
         name: 'play-song',
         component: playAudioPage
+    },
+    {
+        path: '/mlog/login',
+        name: "login",
+        component: loginPage
     }
 ];
 

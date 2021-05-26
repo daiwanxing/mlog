@@ -2,13 +2,10 @@
  * @Author: Daiwanxing
  * @Date: 2021-04-22 11:20:43
  * @Last Modified by: Daiwanxing
- * @Last Modified time: 2021-04-22 11:21:03
+ * @Last Modified time: 2021-05-26 14:56:39
  * 该文件工具类用于将一些常见的emoji表情转换成图片
  * 例如： [笑哭] -> 请求一张网易云的笑哭标签
  */
-
-import { h } from "vue"
-
 const EMOJI_LIST = {
     "[笑哭]": "https://s1.music.126.net/style/web2/emoji/emoji_86@2x.png",
     "[可爱]": "https://s1.music.126.net/style/web2/emoji/emoji_85@2x.png",

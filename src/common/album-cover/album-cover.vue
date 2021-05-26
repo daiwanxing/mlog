@@ -4,7 +4,6 @@
         <img 
             :src="coverUrl" 
             class="album-cover-image" 
-            :style="{height: imageWidth + 'px'}" 
             @load="isLoaded = true"
         />
     </div>

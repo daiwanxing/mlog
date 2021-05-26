@@ -5,14 +5,21 @@
 </template>
 
 <script>
+  import { login, loginStatus } from "@/api/user.js";
+
   export default {
-    name: "netMusic-App"
+    name: "netMusic-App",
+    setup () {
+      loginStatus().then(res => {
+        console.log(res);
+      })
+    }
   }
 </script>
 
 <style>
 :root {
-  --mainTheme: #d43c33;
+  --mainTheme: #dd0000;
   --textTheme: #dd001b;
 }
 #app {

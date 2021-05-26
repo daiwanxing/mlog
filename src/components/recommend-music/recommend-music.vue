@@ -37,7 +37,7 @@
       </div>
       <!-- 推荐歌单 -->
       <section class="song-list-group">
-        <h3 class="sub-title">推荐歌单</h3>
+        <h3 class="sub-title">编辑推荐</h3>
         <div class="song-list-box">
           <router-link
             class="song-list"
