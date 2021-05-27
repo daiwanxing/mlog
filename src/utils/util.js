@@ -21,6 +21,7 @@ export function getStorage(key, defaultValue = {}) {
 /**
  * 清除cookie
  * @param cookieName
+ * @param path
  */
 export function clearCookie(cookieName, path = '/') {
     if (!cookieName) {
@@ -31,6 +32,6 @@ export function clearCookie(cookieName, path = '/') {
             clearCookie(cookieName);
         });
     } else {
-        document.cookie = `${cookieName};expires=${new Date().toUTCString()};path=${path}`;
+        document.cookie = `${cookieName}=0;expires=${new Date().toUTCString()};path=${path}`;
     }
 }

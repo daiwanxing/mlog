@@ -3,7 +3,7 @@
     <form class="login-form" name="login-form">
       <div class="login-phone-input">
         <input
-          type="number"
+          type="telephone"
           placeholder="请输入手机号"
           v-model.trim="phone"
           @input="inputValidCheck"
@@ -31,7 +31,12 @@
         <a href="#" class="fgt-pwd">忘记密码</a>
         <p class="error-tips" v-if="!isValid">{{ errorText }}</p>
       </div>
-      <button type="button" @click="checkValidHandler" :disabled="btnDisabled" :class="{'dis-btn': btnDisabled}">
+      <button
+        type="button"
+        @click="checkValidHandler"
+        :disabled="btnDisabled"
+        :class="{ 'dis-btn': btnDisabled }"
+      >
         登录
       </button>
       <p class="back-home">
@@ -45,13 +50,29 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { login } from "@/api/user";
+import { clearCookie } from '@/utils/util.js';
 
 const errorText = ref("");
 const isValid = ref(true);
-const isAutoLogin = ref(true); // 默认勾选”自动登录“
 const phone = ref("");
 const pwd = ref("");
 const btnDisabled = ref(false);
+
+function phoneVailidPromise() {
+  const PHONE_REG = /^1[3456789]\d{9}$/g;
+  return new Promise((resovle, reject) => {
+    let val = phone.value.toString();
+    if (!PHONE_REG.test(val)) {
+      reject("请输入正确的手机号");
+      return;
+    }
+    if (!pwd.value) {
+      reject("请输入密码");
+      return;
+    }
+    resovle();
+  });
+}
 
 async function checkValidHandler() {
   try {
@@ -63,21 +84,11 @@ async function checkValidHandler() {
     errorText.value = e;
     isValid.value = false;
   } finally {
-    loginHandler();
+    if (isValid.value) {
+      loginHandler();
+    }
     btnDisabled.value = false;
   }
-}
-
-function phoneVailidPromise() {
-  const PHONE_REG = /^1[3456789]\d{9}$/g;
-  return new Promise((resovle, reject) => {
-    let val = phone.value.toString();
-    if (PHONE_REG.test(val)) {
-      resovle();
-    } else {
-      reject("请输入正确的手机号");
-    }
-  });
 }
 
 function loginHandler() {
@@ -96,6 +107,11 @@ const router = useRouter();
 function redirectHome() {
   router.push("/mlog/");
 }
+
+const isAutoLogin = ref(true); // 默认勾选”自动登录“
+window.addEventListener("beforeunload", function () {
+  if (isAutoLogin.value === false) clearCookie();
+});
 </script>
 
 <style scoped lang="scss">
@@ -169,11 +185,11 @@ function redirectHome() {
     cursor: pointer;
 
     &.dis-btn {
-        opacity: .5;
+      opacity: 0.5;
     }
 
-    &:hover {
-      opacity: 0.9;
+    &:active {
+      opacity: .9;
     }
 
     &:focus-visible {

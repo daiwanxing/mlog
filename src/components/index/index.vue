@@ -109,8 +109,11 @@
           </g>
         </svg>
       </div>
-      <div class="actions-btn">
-        <button class="download-btn" @click="loginHandler">登录</button>
+      <div class="actions-wrap">
+        <template v-if="login">
+          <div class="user-account" style="color: #fff;">{{profile.nickname}}</div>
+        </template>
+        <button class="download-btn" @click="loginHandler" v-else>登录</button>
       </div>
     </header>
     <nav class="music-nav">
@@ -143,6 +146,7 @@ import searchPage from "../search-page/search-page.vue";
 import { debounce } from "lodash-es";
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
+import { store } from "@/store/index";
 
 export default {
   name: "index",
@@ -153,8 +157,10 @@ export default {
   },
   setup() {
 
+    const { login, profile } = store.getters.getLoginUser();
+    console.log(profile);
     const router = useRouter();
-  
+
     const compoenntId = ref("recommend-music"); // TODO 部署的时候改为recommend-music
     const staticNavList = [
       {
@@ -171,9 +177,9 @@ export default {
       },
     ];
     const defaultActive = computed({
-      set (idx) {
-          compoenntId.value = staticNavList[idx].val;
-          moveEmberBar(idx); // 移动小横条
+      set(idx) {
+        compoenntId.value = staticNavList[idx].val;
+        moveEmberBar(idx); // 移动小横条
       },
       get() {
         return staticNavList.findIndex((d) => d.val === compoenntId.value);
@@ -182,9 +188,9 @@ export default {
 
     // 打开登录页面
     const loginHandler = function () {
-        router.push({
-          name: "login"
-        });
+      router.push({
+        name: "login",
+      });
     };
 
     const itemRefs = []; // 顶部 tab的refs
@@ -226,8 +232,10 @@ export default {
       defaultActive,
       setItemRef,
       emberRef,
+      login,
+      profile
     };
-  }
+  },
 };
 </script>
 

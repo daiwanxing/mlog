@@ -5,8 +5,32 @@
 </template>
 
 <script>
+import { store } from '@/store/index';
+import { loginStatus } from "@/api/user";
+
 export default {
-  name: "netMusic-App"
+  name: "netMusic-App",
+  setup () {
+
+    checkLogin();
+    async function checkLogin () {
+      let account, profile;
+       try {
+         let { data } = await loginStatus();
+         account = data.account;
+         profile = data.profile;
+       } catch (e) {
+         alert(e);
+       } finally {
+         if (account && profile) {
+           store.mutations.setLoginState(true);
+           store.mutations.updateUserInfo(profile);
+         } else {
+           store.mutations.setLoginState(false);
+         }
+       }
+    }
+  }
 };
 </script>
 
