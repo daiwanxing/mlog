@@ -5,6 +5,8 @@
         v-for="item in recordList"
         :key="item"
         class="history-chip"
+        tabindex="0"
+        @keyup.enter="$emit('searchHandler', item)"
         @click="$emit('searchHandler', item)"
       >
         {{ item }}

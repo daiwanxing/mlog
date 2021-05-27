@@ -1,6 +1,5 @@
 <template>
   <div class="hot-search-box">
-    <!-- 热门搜索 -->
     <span class="hot-search-title">热门搜索</span>
     <template v-if="loading">
       <loading></loading>

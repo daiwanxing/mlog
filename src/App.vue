@@ -7,6 +7,7 @@
 <script>
 import { store } from '@/store/index';
 import { loginStatus } from "@/api/user";
+import { clearCookie } from '@/utils/util.js';
 
 export default {
   name: "netMusic-App",
@@ -26,6 +27,7 @@ export default {
            store.mutations.updateUserInfo(profile);
          } else {
            store.mutations.setLoginState(false);
+           clearCookie();
          }
        }
     }
