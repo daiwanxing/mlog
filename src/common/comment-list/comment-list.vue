@@ -52,7 +52,12 @@ export default {
     setup() {
         // 格式化日期
         function formatDate (data) {
-            return dayjs(data).fromNow();
+            const daySeventMillSeconds = 604800000;
+            const now = new Date().getTime();
+            if (data > now - daySeventMillSeconds) {
+                return dayjs(data).fromNow();
+            }
+            return dayjs(data).format("YYYY年MM月DD日");
         }
 
         return {
