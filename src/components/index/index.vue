@@ -111,9 +111,11 @@
       </div>
       <div class="actions-wrap">
         <template v-if="login">
-          <div class="user-account" style="color: #fff;">{{profile.nickname}}</div>
+          <div class="user-account">
+            <img :src="profile.avatarUrl" alt="profile.nickname" class="user-avatar">
+            {{profile.nickname}}</div>
         </template>
-        <button class="download-btn" @click="loginHandler" v-else>登录</button>
+        <button class="login-btn" @click="loginHandler" v-else>登录</button>
       </div>
     </header>
     <nav class="music-nav">
@@ -261,7 +263,7 @@ main {
       }
     }
 
-    .download-btn {
+    .login-btn {
       width: 100px;
       line-height: 36px;
       color: var(--mainTheme);
@@ -270,6 +272,16 @@ main {
       outline: 0;
       border: 0;
       padding: 0;
+    }
+
+    .user-account {
+      color: #fff;
+
+      .user-avatar {
+        width: 44px;
+        vertical-align: middle;
+        border-radius: 50%;
+      }
     }
   }
 

@@ -20,16 +20,12 @@
                     </div>
                 </div>
                 <div class="comment-desc">
-                  <template v-if="item.beReplied.length">
-                      <!-- 是否是@别人的评论 -->
-                    <span>回复</span>
-                    <router-link to="/mlog/" class="user-page">@{{item.beReplied[0].user.nickname}}</router-link>
-                    <span>：{{item.content}}</span>
-                    <div class="reply-content">
-                      <span>@{{item.beReplied[0].user.nickname}}：{{item.beReplied[0].content}}</span>
-                    </div>
-                  </template>
-                  <comment-content :text="item.content" v-else />
+                    <comment-reply 
+                        :postContent="item.content"
+                        :postAuthor="item.beReplied.length ? item.beReplied[0].user.nickname : ''"
+                        :replyContent="item.beReplied.lengt ? item.beReplied[0].content : ''"
+                        :isReply="item.beReplied.length !== 0"
+                    ></comment-reply>
                 </div>
             </div>
         </li>
@@ -39,11 +35,11 @@
 <script>
 // 评论列表组件
 import dayjs from '@/utils/dayjs-util';
-import commentContent from '@/common/comment-content/comment-content.vue';
+import commentReply from '@/common/comment-reply/comment-reply.vue';
 
 export default {
     components: {
-       commentContent
+       commentReply
     },
     props: {
         comments: {

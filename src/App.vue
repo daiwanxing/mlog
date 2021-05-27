@@ -11,7 +11,6 @@ import { loginStatus } from "@/api/user";
 export default {
   name: "netMusic-App",
   setup () {
-
     checkLogin();
     async function checkLogin () {
       let account, profile;
