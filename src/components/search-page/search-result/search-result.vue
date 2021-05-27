@@ -1,9 +1,7 @@
 <template>
     <div class="search-result-box">
         <loading-bar v-if="loading"></loading-bar>
-        <song-list 
-            v-bind="$attrs"
-        ></song-list>
+        <song-list v-bind="$attrs"></song-list>
     </div>
 </template>
 
@@ -24,7 +22,6 @@ export default {
     },
     setup(props) {
         const loading = toRef(props, "loading");
-
         return {
             loading
         }

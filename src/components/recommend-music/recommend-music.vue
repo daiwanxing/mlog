@@ -82,6 +82,7 @@ import {
   onDeactivated,
   computed,
 } from "vue";
+import { useRouter } from "vue-router";
 
 
 export default {
@@ -135,6 +136,7 @@ export default {
     });
     onActivated(function () {
       swiperVisible.value = true;
+      window.scrollTo({top: 0});
     });
 
     const newMusicList = computed(() => data.newMusic.map((item) => item.song));
@@ -148,7 +150,7 @@ export default {
       getMusicList,
       ...toRefs(data)
     };
-  },
+  }
 };
 </script>
 

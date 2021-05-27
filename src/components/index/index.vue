@@ -158,12 +158,10 @@ export default {
     searchPage,
   },
   setup() {
-
     const { login, profile } = store.getters.getLoginUser();
-    console.log(profile);
     const router = useRouter();
 
-    const compoenntId = ref("recommend-music"); // TODO 部署的时候改为recommend-music
+    const compoenntId = ref("recommend-music");
     const staticNavList = [
       {
         name: "推荐音乐",
