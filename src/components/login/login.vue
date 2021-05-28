@@ -3,10 +3,11 @@
     <form class="login-form" name="login-form">
       <div class="login-phone-input">
         <input
-          type="telephone"
+          type="tel"
           placeholder="请输入手机号"
           v-model.trim="phone"
           @input="inputValidCheck"
+          maxlength="11"
         />
       </div>
       <div class="login-password-input">
