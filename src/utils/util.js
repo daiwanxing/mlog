@@ -28,8 +28,10 @@ export function clearCookie(cookieName, path = '/') {
         // 如果不传，则删掉全部的cookie
         let cookieList = document.cookie.split(";");
         cookieList.forEach((item) => {
-            let cookieName = item.split("=")[0];
-            clearCookie(cookieName);
+            if (item) {
+                let cookieName = item.split("=")[0];
+                clearCookie(cookieName);
+            }
         });
     } else {
         document.cookie = `${cookieName}=0;expires=${new Date().toUTCString()};path=${path}`;
