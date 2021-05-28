@@ -8,10 +8,12 @@ import md5 from "md5";
  */
 export function login (phone, password) {
     const md5Pwd = md5(password);
-    return axios.post("/login/cellphone", {
-        phone,
-        password: md5Pwd,
-        md5_password: md5Pwd
+    return axios.get("/login/cellphone", {
+        params: {
+            phone,
+            password: md5Pwd,
+            md5_password: md5Pwd
+        }
     });
 }
 

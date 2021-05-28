@@ -2,7 +2,7 @@
  * @Author: Daiwanxing
  * @Date: 2021-04-23 14:57:22
  * @Last Modified by: Daiwanxing
- * @Last Modified time: 2021-04-25 20:30:41
+ * @Last Modified time: 2021-05-28 11:27:00
  * 评论 接口
  */
 import axios from '../utils/axios-utils';
@@ -13,11 +13,12 @@ import axios from '../utils/axios-utils';
  * @param limit 取出评论数
  * @param offset 偏移数，做分页
  */
-export function fetchPlayListComment (id, limit = 20) {
+export function fetchPlayListComment (id, limit = 20, offset = 1) {
     return axios.get("/comment/playlist", {
         params: {
             id,
-            limit
+            limit,
+            offset
         }
     })
 }

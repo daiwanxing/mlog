@@ -23,7 +23,7 @@
                     <comment-reply 
                         :postContent="item.content"
                         :postAuthor="item.beReplied.length ? item.beReplied[0].user.nickname : ''"
-                        :replyContent="item.beReplied.lengt ? item.beReplied[0].content : ''"
+                        :replyContent="item.beReplied.length ? item.beReplied[0].content : ''"
                         :isReply="item.beReplied.length !== 0"
                     ></comment-reply>
                 </div>
@@ -36,6 +36,7 @@
 // 评论列表组件
 import dayjs from '@/utils/dayjs-util';
 import commentReply from '@/common/comment-reply/comment-reply.vue';
+import { toRefs } from "vue";
 
 export default {
     components: {
@@ -49,8 +50,9 @@ export default {
             }
         }
     },
-    setup() {
+    setup(props) {
         // 格式化日期
+        const { comments } = toRefs(props);
         function formatDate (data) {
             const daySeventMillSeconds = 604800000;
             const now = new Date().getTime();
@@ -61,7 +63,8 @@ export default {
         }
 
         return {
-            formatDate
+            formatDate,
+            comments
         }
     }
 }

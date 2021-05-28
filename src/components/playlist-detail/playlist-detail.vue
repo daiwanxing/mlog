@@ -15,7 +15,6 @@
           <albumCover 
               :count="info.playCount" 
               :coverUrl="info.coverImgUrl"
-              @click="openDetailPage"
           ></albumCover>
         </div>
         <div class="playlist-desc">
@@ -48,16 +47,6 @@
         <comment-list :comments="commentInfo"></comment-list>
       </section>
     </template>
-    <transition enter-active-class="animate__slideInUp animate__faster"
-                leave-active-class="animate__slideOutDown animate__faster"
-    >
-      <div class="cover-detail animate__animated" 
-            v-if="coverDetailVisible"
-            :style="[{ 'background-image': `url(${info.coverImgUrl})` }]"
-      >
-
-      </div>
-    </transition>
   </main>
 </template>
 
@@ -70,7 +59,7 @@ import albumCover from "@/common/album-cover/album-cover.vue";
 import commentList from "@/common/comment-list/comment-list.vue";
 import songList from "@/common/song-list/song-list.vue";
 import loadingBar from "@/common/loading/loading.vue";
-import { ref, onMounted, reactive, toRefs } from "vue";
+import { ref, onMounted, reactive, toRefs, onBeforeMount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
 import { fetchPlayListComment, fetchHotComments } from "@/api/comment";
@@ -84,9 +73,6 @@ export default {
     albumCover
   },
   setup() {
-    let coverDetailVisible = ref(false);
-    const router = useRouter();
-    const routes = useRoute();
     const playlist = reactive({
       info: {}, // 歌单信息
       songs: [], // 歌单歌曲列表
@@ -95,6 +81,8 @@ export default {
       hotComments: []
     });
 
+    const routes = useRoute();
+    const router = useRouter();
     const playListId = ref(routes.query.id);
     if (!playListId.value) {
       // 如果不存在歌单id 直接返回到上一级路由
@@ -122,14 +110,15 @@ export default {
         });
     });
 
-    function openDetailPage () {
-      coverDetailVisible.value = true;
+    function scrollBottomHandler () {  
     }
 
+    onBeforeMount(function () {
+      // 移除鼠标监听事件，
+    });
+    
     return {
       loading,
-      coverDetailVisible,
-      openDetailPage,
       ...toRefs(playlist),
     };
   },
