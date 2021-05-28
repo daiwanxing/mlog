@@ -45,6 +45,7 @@
         <!-- 评论列表区 -->
         <div class="pl-title">最新评论({{dynamicInfo.commentCount}})</div>
         <comment-list :comments="commentInfo"></comment-list>
+        <loadingBar v-if="scrollLoading"></loadingBar>
       </section>
     </template>
   </main>
@@ -59,11 +60,12 @@ import albumCover from "@/common/album-cover/album-cover.vue";
 import commentList from "@/common/comment-list/comment-list.vue";
 import songList from "@/common/song-list/song-list.vue";
 import loadingBar from "@/common/loading/loading.vue";
-import { ref, onMounted, reactive, toRefs, onBeforeMount } from "vue";
+import { ref, onMounted, reactive, toRefs, onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
 import { fetchPlayListComment, fetchHotComments } from "@/api/comment";
 import { songListDetailDto } from "@/api/dto/song-list-dto";
+import { debounce } from "lodash-es";
 
 export default {
   components: {
@@ -84,10 +86,10 @@ export default {
     const routes = useRoute();
     const router = useRouter();
     const playListId = ref(routes.query.id);
-    if (!playListId.value) {
-      // 如果不存在歌单id 直接返回到上一级路由
-      return router.back();
-    }
+
+    if (!playListId.value) return router.back();
+
+    let totalPage = 1; // default pages
     const loading = ref(true);
     onMounted(function () {
       const id = playListId.value;
@@ -104,21 +106,37 @@ export default {
           playlist.commentInfo = commentInfo.comments;
           playlist.dynamicInfo = dynamicInfo;
           playlist.hotComments = hotResult.hotComments;
+          totalPage = Math.round(playlist.dynamicInfo.commentCount / 20);
         })
         .finally(() => {
           loading.value = false;
         });
     });
 
-    function scrollBottomHandler () {  
-    }
-
-    onBeforeMount(function () {
-      // 移除鼠标监听事件，
+    let scrollLoading = ref(false);
+    let offset = 1;
+    const scrollBottomHandler = debounce(function () {
+        const scrollDistance = document.documentElement.scrollHeight - window.innerHeight; // 可以滚动的距离
+        if (scrollDistance - 3 < window.pageYOffset && !scrollLoading.value && offset <= totalPage) {
+          scrollLoading.value = true;
+          fetchPlayListComment(playListId.value, 20, offset + 1)
+            .then(res => {
+              playlist.commentInfo = playlist.commentInfo.concat(res.comments);
+            })
+            .finally(() => {
+              offset += 1;
+              scrollLoading.value = false;
+            });
+        }
+    }, 200);
+    window.addEventListener("scroll", scrollBottomHandler);
+    onBeforeUnmount(function () {
+      window.removeEventListener("scroll", scrollBottomHandler);
     });
     
     return {
       loading,
+      scrollLoading,
       ...toRefs(playlist),
     };
   },
