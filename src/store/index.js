@@ -1,4 +1,5 @@
 import { reactive } from "vue";
+import { isEmpty } from "lodash-es";
 
 export const store = {
     state: reactive({
@@ -12,14 +13,20 @@ export const store = {
         },
         updateUserInfo (user = {}) {
             store.state.profileInfo = user;
+            if (!isEmpty(user)) {
+                this.setLoginState(true);
+            }
         }
     },
     getters: {
-        getLoginUser () {
-            return {
-                login: store.state.login,
-                profile: store.state.profileInfo
-            }
+        getLoginState () {
+            return store.state.login;
+        },
+        getUserInfo () {
+            return store.state.profileInfo;
         }
+    },
+    commit (mutationName, data) {
+        store.mutations[mutationName](data);
     }
 }

@@ -6,30 +6,25 @@
 
 <script>
 import { store } from '@/store/index';
-import { loginStatus } from "@/api/user";
-import { clearCookie } from '@/utils/util.js';
+import { userInfo } from "@/api/user";
+import { isLoginValid } from "@/useComposition/useLoginStatus";
+import { clearCookie } from './utils/util';
 
 export default {
   name: "netMusic-App",
   setup () {
     checkLogin();
     async function checkLogin () {
-      let account, profile;
-       try {
-         let { data } = await loginStatus();
-         account = data.account;
-         profile = data.profile;
-       } catch (e) {
-         alert(e);
-       } finally {
-         if (account && profile) {
-           store.mutations.setLoginState(true);
-           store.mutations.updateUserInfo(profile);
-         } else {
-           store.mutations.setLoginState(false);
-           clearCookie();
-         }
-       }
+      const loginState = isLoginValid();
+      console.log(loginState);
+      if (loginState) {
+        userInfo(localStorage.getItem("uid")).then(res => {
+          store.commit("updateUserInfo", res.profile);
+        });
+      } else {
+        localStorage.removeItem("uid");
+        clearCookie();
+      }
     }
   }
 };

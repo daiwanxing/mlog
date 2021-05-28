@@ -49,6 +49,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { store } from '@/store/index';
 import { useRouter } from "vue-router";
 import { login } from "@/api/user";
 import { clearCookie } from '@/utils/util.js';
@@ -98,6 +99,8 @@ function loginHandler() {
         errorText.value = res.message;
         isValid.value = false;
     } else {
+      localStorage.setItem("uid", res.account.id);
+      store.commit("updateUserInfo", res.profile);
       redirectHome();
     }
   });

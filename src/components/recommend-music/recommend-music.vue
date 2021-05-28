@@ -112,7 +112,6 @@ export default {
         data.songList = result;
       })
       .catch((error) => {
-        console.error(error);
         requestError.value = true;
       })
       .finally(() => {

@@ -23,3 +23,15 @@ export function login (phone, password) {
 export function loginStatus () {
     return axios.get("/login/status");
 }
+
+/***
+ * 获取用户信息
+ * @param uid 用户id
+ */
+export function userInfo (uid) {
+    return axios.get("/user/detail", {
+        params: {
+            uid
+        }
+    })
+}

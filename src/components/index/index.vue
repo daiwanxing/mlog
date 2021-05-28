@@ -110,7 +110,7 @@
         </svg>
       </div>
       <div class="actions-wrap">
-        <template v-if="login">
+        <template v-if="isLogin">
           <div class="user-account">
             <img :src="profile.avatarUrl" alt="profile.nickname" class="user-avatar">
             {{profile.nickname}}</div>
@@ -129,8 +129,7 @@
             class="music-nav-link"
             @click="defaultActive = index"
             :ref="setItemRef"
-            >{{ item.name }}</a
-          >
+            >{{ item.name }}</a>
         </li>
         <i class="ember-view" ref="emberRef"></i>
       </ul>
@@ -158,7 +157,8 @@ export default {
     searchPage,
   },
   setup() {
-    const { login, profile } = store.getters.getLoginUser();
+    const isLogin = computed(() => store.getters.getLoginState());
+    const profile = computed(() => store.getters.getUserInfo());
     const router = useRouter();
 
     const compoenntId = ref("recommend-music");
@@ -232,8 +232,8 @@ export default {
       defaultActive,
       setItemRef,
       emberRef,
-      login,
-      profile
+      isLogin,
+      profile,
     };
   },
 };
