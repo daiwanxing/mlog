@@ -1,0 +1,1 @@
+import{p as a,j as s,o as e,e as o,V as c,f as l}from"./vendor.08c6e7a1.js";a("data-v-525bc664");const t={class:"play-audio-page"},n=l("h1",null,"播放界面",-1),d=l("audio",{src:""},null,-1),u=l("div",null,null,-1);s();const p={expose:[],setup(a){c((a=>({"59e61cb2":s})));const s="red";return(a,s)=>(e(),o("section",t,[n,d,u]))},__scopeId:"data-v-525bc664"};export default p;
