@@ -94,8 +94,12 @@ async function checkValidHandler() {
 
 function loginHandler() {
   login(phone.value, pwd.value).then((res) => {
-    console.log(res);
-    redirectHome();
+    if (res.code === 502 || res.code === 501) {
+        errorText.value = res.message;
+        isValid.value = false;
+    } else {
+      redirectHome();
+    }
   });
 }
 
