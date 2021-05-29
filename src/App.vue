@@ -5,26 +5,26 @@
 </template>
 
 <script>
-import { store } from '@/store/index';
-import { userInfo } from "@/api/user";
-import { isLoginValid } from "@/useComposition/useLoginStatus";
-import { clearCookie } from './utils/util';
+import store from '@/store/index';
+import { loginStatus } from "@/api/user";
 
 export default {
   name: "netMusic-App",
   setup () {
     checkLogin();
-    async function checkLogin () {
-      const loginState = isLoginValid();
-      console.log(loginState);
-      if (loginState) {
-        userInfo(localStorage.getItem("uid")).then(res => {
-          store.commit("updateUserInfo", res.profile);
-        });
-      } else {
-        localStorage.removeItem("uid");
-        clearCookie();
-      }
+    function checkLogin () {
+      loginStatus().then(({ data }) => {
+        if (data.account && data.profile) {
+          store.commit("setUserLogin", true);
+          store.commit("setUserInfo", data.profile);
+          store.commit({
+            type: "setAccount",
+            payload: data.account
+          })
+        }
+      }).catch(e => {
+        console.error(e);
+      })
     }
   }
 };

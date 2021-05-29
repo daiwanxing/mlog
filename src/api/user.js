@@ -21,7 +21,12 @@ export function login (phone, password) {
  * 获取登录状态
  */
 export function loginStatus () {
-    return axios.get("/login/status");
+    let date = new Date().getTime();  // 防止缓存
+    return axios.get("/login/status", {
+        params: {
+            date
+        }
+    });
 }
 
 /***
@@ -33,5 +38,6 @@ export function userInfo (uid) {
         params: {
             uid
         }
-    })
+    });
 }
+

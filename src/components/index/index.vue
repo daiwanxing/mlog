@@ -147,7 +147,7 @@ import searchPage from "../search-page/search-page.vue";
 import { debounce } from "lodash-es";
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
-import { store } from "@/store/index";
+import store from "@/store/index";
 
 export default {
   name: "index",
@@ -157,8 +157,8 @@ export default {
     searchPage,
   },
   setup() {
-    const isLogin = computed(() => store.getters.getLoginState());
-    const profile = computed(() => store.getters.getUserInfo());
+    const isLogin = computed(() => store.state.login);
+    const profile = computed(() => store.state.userInfo);
     const router = useRouter();
 
     const compoenntId = ref("recommend-music");
