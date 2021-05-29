@@ -223,7 +223,7 @@ export default {
 
     onBeforeUnmount(function () {
       window.removeEventListener("resize", resize);
-    });
+    }); 
 
     return {
       compoenntId,
