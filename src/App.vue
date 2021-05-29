@@ -17,10 +17,7 @@ export default {
         if (data.account && data.profile) {
           store.commit("setUserLogin", true);
           store.commit("setUserInfo", data.profile);
-          store.commit({
-            type: "setAccount",
-            payload: data.account
-          })
+          store.commit("setAccount", data.account);
         }
       }).catch(e => {
         console.error(e);
