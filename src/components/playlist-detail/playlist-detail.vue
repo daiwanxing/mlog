@@ -39,12 +39,12 @@
       <!--  热评列表    -->
       <section class="hot-comments" v-if="hotComments.length">
         <div class="pl-title">精彩评论</div>
-        <comment-list :comments="hotComments"></comment-list>
+        <comment-list :comments="hotComments" :playlistId="info.id"></comment-list>
       </section>
       <section class="review-comments" v-if="commentInfo.length">
         <!-- 评论列表区 -->
         <div class="pl-title">最新评论({{dynamicInfo.commentCount}})</div>
-        <comment-list :comments="commentInfo"></comment-list>
+        <comment-list :comments="commentInfo" :playlistId="info.id" @updateComments="updateHandler" />
         <loadingBar v-if="scrollLoading"></loadingBar>
       </section>
     </template>
@@ -60,12 +60,13 @@ import albumCover from "@/common/album-cover/album-cover.vue";
 import commentList from "@/common/comment-list/comment-list.vue";
 import songList from "@/common/song-list/song-list.vue";
 import loadingBar from "@/common/loading/loading.vue";
-import { ref, onMounted, reactive, toRefs, onBeforeUnmount } from "vue";
+import { ref, onMounted, reactive, toRefs, onBeforeUnmount, toRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fetchSongList, fetchSongListDynamic } from "@/api/song-list";
 import { fetchPlayListComment, fetchHotComments } from "@/api/comment";
 import { songListDetailDto } from "@/api/dto/song-list-dto";
 import { debounce } from "lodash-es";
+import useComment from "@/composables/useComment";
 
 export default {
   components: {
@@ -75,6 +76,7 @@ export default {
     albumCover
   },
   setup() {
+    
     const playlist = reactive({
       info: {}, // 歌单信息
       songs: [], // 歌单歌曲列表
@@ -82,6 +84,9 @@ export default {
       dynamicInfo: {}, // 动态信息
       hotComments: []
     });
+
+    const { updateComments } = useComment();
+    const updateHandler = updateComments(toRef(playlist, 'commentInfo'));
 
     const routes = useRoute();
     const router = useRouter();
@@ -136,6 +141,7 @@ export default {
     
     return {
       loading,
+      updateHandler,
       scrollLoading,
       ...toRefs(playlist),
     };

@@ -43,8 +43,6 @@ export default {
       window.removeEventListener("resize", debounceResizeImageHandler);
     });
 
-
-
     return {
       translatorToMillon,
       imageWidth,

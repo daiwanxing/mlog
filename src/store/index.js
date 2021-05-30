@@ -18,7 +18,7 @@ const mutations = {
     setAccount(state, payload) {
         state.accountInfo = payload;
         if (debug) {
-            console.info("state account has been changed", state.accountInfo);
+            console.info("state account has been changed");
         }
     },
     setUserInfo(state, payload) {
@@ -30,7 +30,7 @@ const mutations = {
 };
 
 let store = Object.create({
-    commit,
+    commit
 });
 
 store.state = reactive({

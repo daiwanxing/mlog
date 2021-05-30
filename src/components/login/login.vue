@@ -108,11 +108,9 @@ function loginHandler() {
     });
 }
 
-// TODO 新的需求： 如果用户勾选的是非自动登录，则页面一旦刷新，将rollback到未登录的状态
-// 存入到localStorage.setItem("autologin", false);
 window.addEventListener("beforeunload", function () {
-  if (isAutoLogin.value) {
-    clearCookie(); 
+  if (isAutoLogin.value === false) {
+      clearCookie(); 
   }
 });
 

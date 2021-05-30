@@ -2,7 +2,7 @@
  * @Author: Daiwanxing
  * @Date: 2021-04-23 14:57:22
  * @Last Modified by: Daiwanxing
- * @Last Modified time: 2021-05-29 09:23:46
+ * @Last Modified time: 2021-05-30 20:16:30
  * 评论接口
  */
 import axios from '../utils/axios-utils';
@@ -38,6 +38,24 @@ export function fetchHotComments (id, type, limit = 20, offset) {
             type,
             limit,
             offset
+        }
+    });
+}
+
+/***
+ * 给评论点赞
+ * @param id 歌曲id / mv id / 歌单id
+ * @param cid 评论id
+ * @param t 1 点赞 0 取消点赞
+ * @param type 点赞所属的类型 （歌单，mv，电台） 歌单默认是2
+ */
+export function doFavor (id, cid, t = 1, type = 2) {
+    return axios.get("/comment/like", {
+        params: {
+            id,
+            cid,
+            t,
+            type
         }
     });
 }

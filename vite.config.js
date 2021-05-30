@@ -9,7 +9,10 @@ export default defineConfig({
   server: {
     port: 3080,
     strictPort: true,
-    open: true
+    open: true,
+    hmr: {
+      timeout: 100000
+    }
   },
   resolve: {
     alias: {
