@@ -1,39 +1,7 @@
-## Welcome to GitHub Pages
-![avatar](https://www.travis-ci.org/daiwanxing/mlog.svg?branch=main)
+## 为什么搭建这个仓库
 
-<br/>
-You can use the [editor on GitHub](https://github.com/Missmisery/mlog/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+  A：因为Vue3已经推出了，需要找个练手的项目熟悉一下Vue3的语法以及提前踩坑框架遇到的bug。
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## 这是一个什么项目
 
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Missmisery/mlog/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+  A：之前打开网页版的网易云发现他们团队正好做了一个半成品的移动端（H5）网易云音乐，于是想着先仿着这个界面做出一个类似H5网易云，接口是在github上找到的，文档挺齐全的，[网易云音乐接口](https://github.com/daiwanxing/NeteaseCloudMusicApi)
