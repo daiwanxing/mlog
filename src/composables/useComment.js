@@ -6,7 +6,7 @@
 
 import dayjs from "@/utils/dayjs-util";
 import { doFavor } from "@/api/comment";
-import { authOperate } from "@/utils/util";
+import { authOperate, scrollPageBottom } from "@/utils/util";
 
 async function doFavorHandler(id, cid, liked, likedCount, emit) {
     authOperate(async () => {
@@ -95,6 +95,11 @@ function formatCommentDate(timeStamp) {
     }
 
     return dayjs(timeStamp).format("YYYY年MM月DD日");
+}
+
+function feedMoreComments () {
+    // 当监听滚动到了底部
+    window.addEventListener();
 }
 
 export default function useComment() {

@@ -39,7 +39,7 @@
       <!--  热评列表    -->
       <section class="hot-comments" v-if="hotComments.length">
         <div class="pl-title">精彩评论</div>
-        <comment-list :comments="hotComments" :playlistId="info.id"></comment-list>
+        <comment-list :comments="hotComments" :playlistId="info.id" @updateComments="updateHotHandler"></comment-list>
       </section>
       <section class="review-comments" v-if="commentInfo.length">
         <!-- 评论列表区 -->
@@ -87,6 +87,7 @@ export default {
 
     const { updateComments } = useComment();
     const updateHandler = updateComments(toRef(playlist, 'commentInfo'));
+    const updateHotHandler = updateComments(toRef(playlist, 'hotComments'));
 
     const routes = useRoute();
     const router = useRouter();
@@ -143,6 +144,7 @@ export default {
       loading,
       updateHandler,
       scrollLoading,
+      updateHotHandler,
       ...toRefs(playlist),
     };
   },

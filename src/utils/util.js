@@ -1,6 +1,7 @@
 "use strict";
 
 import { useRouter } from "vue-router";
+import { debounce } from "lodash-es";
 import store from "@/store/index";
 
 /**
@@ -56,4 +57,16 @@ export function authOperate(handler) {
             name: "login",
         });
     }
+}
+
+
+export function scrollPageBottom (cb) {
+    const handler = debounce(function () {
+        const length = document.documentElement.scrollHeight - window.innerHeight;
+        if (length - 3 < window.pageYOffset) {
+            cb && cb();
+        }
+    });
+
+    return handler;
 }

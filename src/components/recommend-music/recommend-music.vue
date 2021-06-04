@@ -82,8 +82,6 @@ import {
   onDeactivated,
   computed,
 } from "vue";
-import { useRouter } from "vue-router";
-
 
 export default {
   name: "recommend-music",
