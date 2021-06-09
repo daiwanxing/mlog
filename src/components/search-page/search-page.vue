@@ -5,8 +5,8 @@
         <input
           type="text"
           placeholder="搜索歌曲、歌手、专辑"
-          v-model.trim="searchKeyWords"
-          @keyup.enter="searchSongHandler(searchKeyWords)"
+          v-model.trim="searchKey"
+          @keyup.enter="searchSongHandler(searchKey)"
           @input="updateSuggest"
           @compositionstart="chinesePrinterStart"
           @compositionend="chinesePrinterEnd"
@@ -17,34 +17,34 @@
         >
           <i
             class="cancel-search animate__animated"
-            @click="searchKeyWords = ''"
-            v-if="searchKeyWords"
+            @click="searchKey = ''"
+            v-if="searchKey"
           ></i>
         </transition>
       </div>
     </div>
-    <template v-if="searchKeyWords">
+    <template v-if="searchKey">
       <suggest-search
         v-if="suggestState"
-        :searchWords="searchKeyWords"
-        :suggestSong="suggestSong"
-        :loading="loading"
+        :searchWords="searchKey"
+        :suggestSong="suggestList"
+        :loading="loadingState"
         @searchHandler="searchSongHandler"
       />
       <search-result
         v-if="searchState"
-        :loading="loading"
-        :songs="songList"
+        :loading="loadingState"
+        :songs="searchList"
       ></search-result>
     </template>
     <template v-else>
       <!-- 热搜列表 -->
       <hot-search @searchHandler="searchSongHandler"></hot-search>
-      <!-- 搜索历史 -->
     </template>
+    <!-- 搜索历史 -->
     <history-record
       @searchHandler="searchSongHandler"
-      v-show="!searchKeyWords"
+      v-show="!searchKey"
     ></history-record>
   </section>
 </template>
@@ -55,10 +55,10 @@ import historyRecord from "./history-record/history-record.vue";
 import searchResult from "./search-result/search-result.vue";
 import suggestSearch from "./suggest-result/suggest-result.vue";
 import loading from "@/common/loading/loading.vue";
-import { ref, reactive, toRefs } from "vue";
-import { debounce } from "lodash-es";
-import { fetchSearchSuggest, fetchSearch } from "@/api/index";
 import mitt, { MESSAGE_CONSTANTS } from "@/utils/mitt";
+import { ref } from "vue";
+import { debounce } from "lodash-es";
+import { useSearch, seachSongHandler, suggestSearchHandler } from "@/composables/useSearch";
 
 export default {
   name: "search-page",
@@ -70,50 +70,18 @@ export default {
     hotSearch,
   },
   setup() {
-    const data = reactive({
-      songList: [], // 搜索结果列表
-      suggestSong: [], // 搜索建议列表
-    });
-
-    const searchKeyWords = ref(""); // 要搜索的关键字
-    const loading = ref(false); // 加载状态
+    const { searchKey, suggestList, searchList, loadingState } = useSearch();
     let fetchSuggFlag = true; // 是否可以调用建议搜索接口
-
     const suggestState = ref(false); // 建议态
-    const searchSuggestHandler = debounce(function () {
-      loading.value = true;
-      fetchSearchSuggest(searchKeyWords.value)
-        .then(({ result }) => {
-          data.suggestSong = result.allMatch || [];
-        })
-        .finally(function () {
-          loading.value = false;
-        });
-    }, 200);
-
     const searchState = ref(false); // 搜索态
-    function searchByWords() {
-      loading.value = true;
-      data.songList = [];
-      const songName = searchKeyWords.value;
-      fetchSearch(songName)
-        .then(({ result }) => {
-          data.songList = result.songs;
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(function () {
-          loading.value = false;
-        });
-    }
+    const searchSuggestHandler = debounce(suggestSearchHandler, 200);
 
     function updateSuggest() {
       if (fetchSuggFlag) {
-        data.suggestSong = [];
+        suggestList.value = [];
         searchState.value = false; // 搜索态关闭
         suggestState.value = true; // 建议态开启
-        searchKeyWords.value && searchSuggestHandler();
+        searchKey.value && searchSuggestHandler();
       }
     }
 
@@ -122,11 +90,13 @@ export default {
         mitt.emit(MESSAGE_CONSTANTS.ADD_HISTORY, data);
         suggestState.value = false; // 建议态关闭
         searchState.value = true; // 搜索态开启
-        searchKeyWords.value = data;
-        searchByWords();
+        searchKey.value = data;
+        searchList.value = [];
+        seachSongHandler();
       }
     }
 
+    // 合成器事件监听
     function chinesePrinterStart() {
       fetchSuggFlag = false;
     }
@@ -138,14 +108,15 @@ export default {
 
     return {
       suggestState,
-      loading,
+      loadingState,
       searchState,
-      searchKeyWords,
+      searchKey,
       searchSongHandler,
       updateSuggest,
       chinesePrinterStart,
       chinesePrinterEnd,
-      ...toRefs(data),
+      suggestList,
+      searchList
     };
   },
 };

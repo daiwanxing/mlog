@@ -1,5 +1,6 @@
 "use strict";
 
+import { isRef } from "vue";
 import { useRouter } from "vue-router";
 import { debounce } from "lodash-es";
 import store from "@/store/index";
@@ -69,4 +70,8 @@ export function scrollPageBottom (cb) {
     });
 
     return handler;
+}
+
+export function unwrapRef (refVal) {
+    return isRef(refVal) ? refVal.value : refVal;
 }
