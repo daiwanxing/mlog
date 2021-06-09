@@ -3,13 +3,13 @@
     <div class="search-input">
       <div class="search-wrap">
         <input
-          type="text"
+          type="search"
           placeholder="搜索歌曲、歌手、专辑"
           v-model.trim="searchKey"
           @keyup.enter="searchSongHandler(searchKey)"
           @input="updateSuggest"
-          @compositionstart="chinesePrinterStart"
-          @compositionend="chinesePrinterEnd"
+          @compositionstart="disableSuggest = true"
+          @compositionend="disableSuggest = false"
         />
         <transition
           enter-active-class="animate__zoomIn animate__faster"
@@ -40,12 +40,9 @@
     <template v-else>
       <!-- 热搜列表 -->
       <hot-search @searchHandler="searchSongHandler"></hot-search>
+      <!-- 搜索历史 -->
+      <history-record @searchHandler="searchSongHandler"></history-record>
     </template>
-    <!-- 搜索历史 -->
-    <history-record
-      @searchHandler="searchSongHandler"
-      v-show="!searchKey"
-    ></history-record>
   </section>
 </template>
 
@@ -56,7 +53,7 @@ import searchResult from "./search-result/search-result.vue";
 import suggestSearch from "./suggest-result/suggest-result.vue";
 import loading from "@/common/loading/loading.vue";
 import mitt, { MESSAGE_CONSTANTS } from "@/utils/mitt";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { debounce } from "lodash-es";
 import { useSearch, seachSongHandler, suggestSearchHandler } from "@/composables/useSearch";
 
@@ -70,14 +67,13 @@ export default {
     hotSearch,
   },
   setup() {
-    const { searchKey, suggestList, searchList, loadingState } = useSearch();
-    let fetchSuggFlag = true; // 是否可以调用建议搜索接口
+    const { searchKey, suggestList, searchList, loadingState, disableSuggest } = useSearch();
     const suggestState = ref(false); // 建议态
     const searchState = ref(false); // 搜索态
     const searchSuggestHandler = debounce(suggestSearchHandler, 200);
 
     function updateSuggest() {
-      if (fetchSuggFlag) {
+      if (!disableSuggest.value) {
         suggestList.value = [];
         searchState.value = false; // 搜索态关闭
         suggestState.value = true; // 建议态开启
@@ -96,27 +92,20 @@ export default {
       }
     }
 
-    // 合成器事件监听
-    function chinesePrinterStart() {
-      fetchSuggFlag = false;
-    }
-
-    function chinesePrinterEnd() {
-      fetchSuggFlag = true;
-      updateSuggest();
-    }
+    watch(disableSuggest, (newVal) => {
+      if (!newVal) updateSuggest();
+    });
 
     return {
       suggestState,
       loadingState,
       searchState,
       searchKey,
-      searchSongHandler,
-      updateSuggest,
-      chinesePrinterStart,
-      chinesePrinterEnd,
       suggestList,
-      searchList
+      disableSuggest,
+      searchList,
+      searchSongHandler,
+      updateSuggest
     };
   },
 };
@@ -124,6 +113,10 @@ export default {
 
 <style scoped lang="scss">
 // https://github.com/vuejs/rfcs/pull/231
+
+input::-webkit-search-cancel-button {
+  display: none;
+}
 
 .search-box {
   .search-input {

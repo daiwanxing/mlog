@@ -1,11 +1,14 @@
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { fetchSearchSuggest, fetchSearch } from "@/api/index";
 import { unwrapRef } from "@/utils/util";
 
 export function suggestSearchHandler () {
     loadingState.value = true;
-    fetchSearchSuggest(unwrapRef(searchKey))
+    let searchVal = unwrapRef(searchKey);
+    if (searchVal) {
+        fetchSearchSuggest(searchVal)
         .then(({ result }) => {
+            console.log(result);
             suggestList.value = result.allMatch || [];
         })
         .catch(error => {
@@ -14,6 +17,7 @@ export function suggestSearchHandler () {
         .finally(() => {
             loadingState.value = false;
         });
+    }
 }
 
 
@@ -31,9 +35,12 @@ export function seachSongHandler () {
         });
 }
 
-export function updateSuggestList () {
-    // 1. 
+export function switchSuggest () {
+    // 切换到建议搜索页面，如果searchKey不为空，
+    // 关闭 热门搜索数据，历史记录数据，显示建议列表
 }
+
+const disableSuggest = ref(false);
 
 export const searchKey = ref('');
 
@@ -48,6 +55,7 @@ export function useSearch () {
         searchKey,
         suggestList,
         searchList,
-        loadingState
+        loadingState,
+        disableSuggest
     }
 }
