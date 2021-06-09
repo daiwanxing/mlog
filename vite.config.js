@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     port: 3080,
     strictPort: true,
-    open: true,
+    open: '/mlog/',
     hmr: {
       timeout: 100000
     }

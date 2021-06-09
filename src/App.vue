@@ -33,6 +33,9 @@ export default {
   --textTheme: #dd001b;
 }
 #app {
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
