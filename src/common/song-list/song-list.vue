@@ -9,12 +9,6 @@
       <router-link class="song-link" :to="`/mlog/song/${item.id}`">
         <div class="song-name" :data-alias="item.alias">{{item.name}}&nbsp;</div>
         <div class="song-author-info">
-            <!-- SQ 独家 VIP -->
-            <div class="mark-box">
-                <template v-if="item.exclusive">
-                    <span>独家</span>
-                </template>
-            </div>
             <!-- 作者列表 -->
             <div class="author-list">
                 <template
@@ -137,14 +131,6 @@ export default {
         color: #888;
         font-size: 12px;
         height: 18px;
-
-        .mark-box:not(:empty) {
-            border: 1px solid #fdb195;
-            font-size: 12px;
-            padding: 2px;
-            color: #fe672e;
-            transform: scale(0.7);
-        }
     }
 
     .author-list {

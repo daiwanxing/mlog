@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import loading from "@/common/loading/loading.vue";
 import { fetchHotList, hotSelectHandler } from "@/useComposition/useHotSearch";
 
@@ -26,7 +26,7 @@ export default {
     loading
   },
   setup() {
-    const { loading, hotList } = fetchHotList()
+    const { loading, hotList } = fetchHotList();
 
     return {
       hotList,

@@ -20,7 +20,7 @@ export function fetchHotList () {
     };
 }
 
-export function hotSelectHandler (data, vmEmit) {
+export function hotSelectHandler (data: string, emiter: any):void {
     mitt.emit(MESSAGE_CONSTANTS.ADD_HISTORY, data); // 添加一条历史记录
-    vmEmit("searchHandler", data); // 通知父组件
+    emiter("searchHandler", data); // 通知父组件
 }

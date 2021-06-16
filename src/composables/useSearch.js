@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { fetchSearchSuggest, fetchSearch } from "@/api/index";
 import { unwrapRef } from "@/utils/util";
 
@@ -8,7 +8,6 @@ export function suggestSearchHandler () {
     if (searchVal) {
         fetchSearchSuggest(searchVal)
         .then(({ result }) => {
-            console.log(result);
             suggestList.value = result.allMatch || [];
         })
         .catch(error => {

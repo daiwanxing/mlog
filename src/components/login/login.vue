@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import store from "@/store/index";
 import { useRouter } from "vue-router";
 import { login } from "@/api/user";
