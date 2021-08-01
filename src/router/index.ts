@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const index = () => import('@/components/index/index.vue');
 const playlist = () => import('@/components/playlist-detail/playlist-detail.vue');
 const playAudioPage = () => import('@/common/play-page/play-page.vue');
 const loginPage = () => import('@/components/login/login.vue');
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'root',

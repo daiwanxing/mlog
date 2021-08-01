@@ -9,10 +9,7 @@ export default defineConfig({
   server: {
     port: 3080,
     strictPort: true,
-    open: '/mlog/',
-    hmr: {
-      timeout: 100000
-    }
+    open: '/mlog/'
   },
   resolve: {
     alias: {
@@ -26,10 +23,16 @@ export default defineConfig({
     }
   },
   build: {
+    assetsDir: 'asset/img/',
     rollupOptions: {
       input: {
          main: resolve(__dirname, 'index.html'),
          notFound: resolve(__dirname, "404.html")
+      },
+      output: {
+        chunkFileNames: 'js/[name]-[hash].js', // chunkFileNames 是 通过dynamic import 引入的chunk
+        entryFileNames: 'js/[name]-[hash].js', // 入口main.ts
+        assetFileNames: '[ext]/[name]-[hash].[ext]'
       }
     }
   },

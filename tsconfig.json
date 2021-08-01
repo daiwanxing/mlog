@@ -7,10 +7,13 @@
         "strict": true,
         "moduleResolution": "node",
         "module": "ES2020",
+        "removeComments": true,
         "strictNullChecks": true,
         "paths": {
           "@/*": ["./src/*"]
-        }
+        },
+        "types": ["vite/client"],
+        "allowSyntheticDefaultImports": true // 如果一个模块里没有默认导出，则可以设置ture，将所有的命名导出到一个变量中
     },
     "exclude": ["node"],
     "include": [

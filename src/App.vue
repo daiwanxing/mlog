@@ -11,9 +11,14 @@ import { loginStatus } from "@/api/user";
 export default {
   name: "netMusic-App",
   setup () {
+    interface ILogin {
+      account: object;
+      profile: object;
+    }
+
     checkLogin();
     function checkLogin () {
-      loginStatus().then(({ data }: {data: any}) => {
+      loginStatus().then(({ data }: {data: ILogin}) => {
         if (data.account && data.profile) {
           store.commit("setUserLogin", true);
           store.commit("setUserInfo", data.profile);
