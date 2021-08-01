@@ -1,12 +1,23 @@
 {
     "compilerOptions": {
-        "baseUrl": ".",
+        "baseUrl": "./",
+        "allowJs": true,
         "target": "es6",
+        "lib": ["DOM", "ESNext"],
         "strict": true,
         "module": "es2015",
+        "strictNullChecks": true,
         "moduleResolution": "node",
+        "noImplicitAny": false,
         "paths": {
           "@/*": ["./src/*"]
         }
-    }
+    },
+    "exclude": ["node"],
+    "include": [
+      "src",
+      "src/*/**.ts",
+      "src/**.ts",
+      "src/*/**.vue"
+    ]
 }

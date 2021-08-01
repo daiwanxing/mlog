@@ -1,7 +1,7 @@
 import axios from "axios";
 import { get, isObject } from 'lodash-es';
 
-const DEV_URL = "http://localhost:9090"; // dev
+const DEV_URL = "http://localhost:3000"; // dev
 const DEPLOY_URL = "https://music-api-chi.vercel.app"; // pro
 
 const instance = axios.create({

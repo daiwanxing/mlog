@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import store from '@/store/index';
 import { loginStatus } from "@/api/user";
 
@@ -13,13 +13,13 @@ export default {
   setup () {
     checkLogin();
     function checkLogin () {
-      loginStatus().then(({ data }) => {
+      loginStatus().then(({ data }: {data: any}) => {
         if (data.account && data.profile) {
           store.commit("setUserLogin", true);
           store.commit("setUserInfo", data.profile);
           store.commit("setAccount", data.account);
         }
-      }).catch(e => {
+      }).catch((e: Error) => {
         console.error(e);
       })
     }

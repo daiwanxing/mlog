@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import router from "./router/index";
+import router from '@/router/index.js';
 import App from "./App.vue";
 import "animate.css";
 import "@/assets/css/icon.module.css";
@@ -9,6 +9,6 @@ app.use(router);
 
 router.isReady().then(function () {
   app.mount("#app"); // 返回根组件的实例
-}).catch(e => {
+}).catch((e: Error) => {
     console.error("mount routes error", e);
 });
