@@ -5,10 +5,9 @@
         "target": "es6",
         "lib": ["DOM", "ESNext"],
         "strict": true,
-        "module": "es2015",
-        "strictNullChecks": true,
         "moduleResolution": "node",
-        "noImplicitAny": false,
+        "module": "ES2020",
+        "strictNullChecks": true,
         "paths": {
           "@/*": ["./src/*"]
         }
